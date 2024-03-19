@@ -5,6 +5,8 @@ public class Application {
 
         Patrat p1 = new Patrat(2);
 
+       // Calcul c2 = new Cerc(5);
+
         System.out.println("perimetru cerc:");
         System.out.println(c1.calculPerim(c1.getA()));
 
