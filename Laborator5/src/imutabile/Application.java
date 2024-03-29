@@ -10,7 +10,7 @@ public class Application {
         // schimb numele produsului
         //product.setName("carnet");
 
-        System.out.println("CArt immutable: " + cartImmutable.getProduct());
+        System.out.println("CArt immutable: " + cartImmutable.getProduct() + " " + cartImmutable.getNrProd());
         System.out.println("Cart simplu: " + cart.getProduct());
     }
 }
