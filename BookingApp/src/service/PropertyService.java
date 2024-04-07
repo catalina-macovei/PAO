@@ -24,7 +24,6 @@ public class PropertyService {
 
         if (!typeOfPropertyValidation(typeOfProperty)) { return; }
         propertyInit(scanner, typeOfProperty, landlord);
-        // set the address
     }
 
     public void read(Scanner scanner){
@@ -57,7 +56,7 @@ public class PropertyService {
             System.out.println("New price");
             Double p = scanner.nextDouble();
             property.setPrice(p);
-            // apelare fct din setare adresa (creare)
+
             if (typeOfProperty.equals(HOUSE)) {
                 houseInit(scanner, (House) property);
             } else {

@@ -53,10 +53,9 @@ public class AccountBalanceService {
         if (accountBalance == null) {
             // If accountBalance is null, create a new AccountBalance for the user
             create(scanner, user);
-            // Retrieve the updated accountBalance
             accountBalance = user.getAccountBalance();
         }
-        // Now accountBalance should not be null
+        //now accountBalance should not be null
         update(scanner, accountBalance.getAccountNr());
     }
     private void deposit(AccountBalance accountBalance, Scanner scanner) {

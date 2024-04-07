@@ -199,7 +199,6 @@ public class UserService {
         Landlord landlord;
         if (user instanceof Landlord) {
             landlord = (Landlord) user;
-            // Proceed with operations specific to a Landlord
         } else {
             System.out.println("User is not a Landlord.");
             return;

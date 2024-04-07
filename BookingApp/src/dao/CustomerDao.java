@@ -7,8 +7,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CustomerDao {
-    // se face static pentru a apartine clasei
-    // se initializeaza o singura data
 
     private static List<Customer> customers = new ArrayList<>();
 
