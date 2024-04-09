@@ -32,6 +32,7 @@ public class Application {
 
         System.out.println("TRANZACTIE initiala: " + tranzactie);
 
+        // stornare
         Tranzactie tranzactieClona = (Tranzactie)tranzactie.clone();
         double amountNou =  - tranzactieClona.getPayment().getAmount();
         tranzactieClona.getPayment().setAmount(amountNou);

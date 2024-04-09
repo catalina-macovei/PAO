@@ -54,7 +54,9 @@ public class Tranzactie extends ConversieCurrencyImpl implements Cloneable {
 
     @Override
     public Object clone() throws CloneNotSupportedException {
-        return super.clone();
+        Tranzactie clone = (Tranzactie) super.clone();
+        clone.setPayment((Payment) clone.getPayment().clone());
+        return clone;
     }
 
     @Override
