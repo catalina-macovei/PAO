@@ -2,15 +2,16 @@ package service;
 import daoservices.AccountBalanceRepositoryService;
 import model.*;
 
+import java.sql.SQLException;
 import java.util.Scanner;
 public class AccountBalanceService {
     private AccountBalanceRepositoryService dbService;
 
-    public AccountBalanceService () {
+    public AccountBalanceService () throws SQLException {
         this.dbService = new AccountBalanceRepositoryService();
     }
 
-    public void create(Scanner scanner, User user) {
+    public void create(Scanner scanner, User user) throws SQLException {
         System.out.println("Enter the sum of money to deposit:");
         double amount = scanner.nextDouble();
 
@@ -19,16 +20,16 @@ public class AccountBalanceService {
         dbService.createAccountBalance(accountBalance);
     }
 
-    public void read(Scanner scanner, int accountNumber) {
+    public void read(Scanner scanner, int accountNumber) throws SQLException {
         AccountBalance accountBalance = dbService.getByAccountNr(accountNumber);
         System.out.println(accountBalance);
     }
 
-    public void delete(Scanner scanner, int accountNumber) {
+    public void delete(Scanner scanner, int accountNumber) throws SQLException {
         dbService.deleteAccountBalance(dbService.getByAccountNr(accountNumber));
     }
 
-    public void update(Scanner scanner, int accountNumber) {
+    public void update(Scanner scanner, int accountNumber) throws SQLException {
 
         AccountBalance existingAccountBalance = dbService.getByAccountNr(accountNumber);
         if (existingAccountBalance != null) {
@@ -48,7 +49,7 @@ public class AccountBalanceService {
         }
     }
 
-    public void manageAccountBalance(Scanner scanner, User user) {
+    public void manageAccountBalance(Scanner scanner, User user) throws SQLException {
         AccountBalance accountBalance = user.getAccountBalance();
         if (accountBalance == null) {
             // If accountBalance is null, create a new AccountBalance for the user
@@ -58,24 +59,58 @@ public class AccountBalanceService {
         //now accountBalance should not be null
         update(scanner, accountBalance.getAccountNr());
     }
-    private void deposit(AccountBalance accountBalance, Scanner scanner) {
+    private void deposit(AccountBalance accountBalance, Scanner scanner) throws SQLException {
         System.out.println("Amount to deposit: ");
         double amount = scanner.nextDouble();
         double currAmount = accountBalance.getAmount();
         accountBalance.setAmount(currAmount + amount);
+        dbService.update(accountBalance);
         System.out.println("Deposit successful.");
     }
 
-    private void withdraw(AccountBalance accountBalance, Scanner scanner) {
+    private void withdraw(AccountBalance accountBalance, Scanner scanner) throws SQLException {
         System.out.println("Amount to withdraw: ");
         double amount = scanner.nextDouble();
         double currAmount = accountBalance.getAmount();
         if (currAmount >= amount) {
             accountBalance.setAmount(currAmount - amount);
+            dbService.update(accountBalance);
             System.out.println("Withdrawal successful.");
         } else {
             System.out.println("Insufficient funds!");
         }
     }
+    public static void main(String[] args) {
+        try {
+            AccountBalanceService accountBalanceService = new AccountBalanceService();
+            Scanner scanner = new Scanner(System.in);
 
+            // Assuming you have a User object available for testing
+            User testUser = new User();
+
+            // Test create
+            System.out.println("Testing create operation...");
+            accountBalanceService.create(scanner, testUser);
+
+            // Test read
+            System.out.println("Enter account number to read:");
+            int accountNumberToRead = scanner.nextInt();
+            accountBalanceService.read(scanner, accountNumberToRead);
+
+            // Test update
+            System.out.println("Enter account number to update:");
+            int accountNumberToUpdate = scanner.nextInt();
+            accountBalanceService.update(scanner, accountNumberToUpdate);
+
+            // Test delete
+            System.out.println("Enter account number to delete:");
+            int accountNumberToDelete = scanner.nextInt();
+            accountBalanceService.delete(scanner, accountNumberToDelete);
+
+            // Close the scanner to prevent resource leak
+            scanner.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 }

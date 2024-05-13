@@ -71,3 +71,9 @@ CREATE TABLE `booking`.`booking` (
                                        FOREIGN KEY (`customer`) REFERENCES customer (`id`) ON DELETE CASCADE,
                                        FOREIGN KEY (`landlord`) REFERENCES landlord (`id`) ON DELETE CASCADE,
                                        PRIMARY KEY (`id`));
+
+ALTER TABLE booking
+    ADD CONSTRAINT fk_booking_apartment FOREIGN KEY (apartment) REFERENCES apartment(id) ON DELETE CASCADE;
+
+ALTER TABLE booking
+    ADD CONSTRAINT fk_booking_house FOREIGN KEY (house) REFERENCES house(id) ON DELETE CASCADE;

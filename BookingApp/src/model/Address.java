@@ -8,6 +8,8 @@ public class Address {
     private String country;
     private String number;
 
+    public Address() {}
+
     public Address(String street, String city, String country, String number) {
         this.street = street;
         this.city = city;
@@ -49,6 +51,10 @@ public class Address {
 
     public String getNumber() {
         return number;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public void setNumber(String number) {

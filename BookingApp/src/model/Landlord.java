@@ -6,16 +6,18 @@ import java.util.Set;
 
 public class Landlord extends User{
     private Set<Property> properties = new HashSet<>();
+    public Landlord(User user) {
+        super(user.getName(), user.getEmail(), user.getPassword());
+    }
 
     public Landlord(String name, String email, String password, AccountBalance accountBalance, Set<Property> properties) {
         super(name, email, password);
         this.properties = properties;
     }
 
-    public Landlord(User user) {
-        super(user.getName(), user.getEmail(), user.getPassword());
-    }
+    public Landlord() {
 
+    }
     public Set<Property> getProperties() {
         return properties;
     }

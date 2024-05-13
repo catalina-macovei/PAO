@@ -5,6 +5,9 @@ public class AccountBalance {
     private int accountNr;
     private double amount;
 
+    public AccountBalance() {
+    }
+
     public AccountBalance(double amount) {
         this.amount = amount;
         this.accountNr = getNextId();
@@ -19,6 +22,10 @@ public class AccountBalance {
 
     public double getAmount() {
         return amount;
+    }
+
+    public void setAccountNr(int accountNr) {
+        this.accountNr = accountNr;
     }
 
     public void setAmount(double amount) {

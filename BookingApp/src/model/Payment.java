@@ -10,6 +10,10 @@ public class Payment {
         this.amount = amount;
         this.id = getNextId();
     }
+
+    public Payment() {
+    }
+
     private static int getNextId() {
         return counter++;
     }

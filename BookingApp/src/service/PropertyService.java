@@ -3,6 +3,7 @@ package service;
 import daoservices.PropertyRepositoryService;
 import model.*;
 
+import java.sql.SQLException;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Scanner;
@@ -13,12 +14,12 @@ public class PropertyService {
     private PropertyRepositoryService dbService;
     private AddressService addressService;
 
-    public PropertyService() {
+    public PropertyService() throws SQLException {
         this.dbService = new PropertyRepositoryService();
         this.addressService = new AddressService();
     }
 
-    public void create(Scanner scanner, Landlord landlord) {
+    public void create(Scanner scanner, Landlord landlord) throws SQLException {
         System.out.println("Enter type of property [apartment/house]:");
         String typeOfProperty = scanner.nextLine().toLowerCase();
 
@@ -73,7 +74,7 @@ public class PropertyService {
         return true;
     }
 
-    private void propertyInit(Scanner scanner, String typeOfProperty, Landlord landlord) {
+    private void propertyInit(Scanner scanner, String typeOfProperty, Landlord landlord) throws SQLException {
         System.out.println("Enter property name:");
         String name = scanner.nextLine();
         if(checkIfExists(name, typeOfProperty)) {

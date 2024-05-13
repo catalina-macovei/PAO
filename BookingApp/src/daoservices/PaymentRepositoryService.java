@@ -3,24 +3,25 @@ package daoservices;
 import dao.PaymentDao;
 import model.Payment;
 
-public class PaymentRepositoryService {
-    private PaymentDao paymentDao;
+import java.sql.SQLException;
 
-    public PaymentRepositoryService() {
-        this.paymentDao = new PaymentDao(); // Initialize your Payment DAO here
+public class PaymentRepositoryService {
+    private PaymentDao paymentDao = PaymentDao.getInstance();
+
+    public PaymentRepositoryService() throws SQLException {
     }
 
-    public Payment getPaymentById(int id) {
-        Payment payment = paymentDao.read(id);
+    public Payment getPaymentById(int id) throws SQLException {
+        Payment payment = paymentDao.read(String.valueOf(id));
         if (payment == null) {
             System.out.println("No Payment found for ID: " + id);
         }
         return payment;
     }
-    public void addPayment(Payment payment) {
-        paymentDao.create(payment);
+    public void addPayment(Payment payment) throws SQLException {
+        paymentDao.add(payment);
     }
-    public void removePayment(Payment payment) {
+    public void removePayment(Payment payment) throws SQLException {
         paymentDao.delete(payment);
         System.out.println("Removed Payment: " + payment);
     }

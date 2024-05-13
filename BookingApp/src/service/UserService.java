@@ -2,6 +2,8 @@ package service;
 import daoservices.UserRepositoryService;
 import model.*;
 import service.*;
+
+import java.sql.SQLException;
 import java.util.*;
 
 import static utils.Constants.*;
@@ -10,20 +12,22 @@ public class UserService {
     private PropertyService propertyService;
     private BookingService bookingService;
     private AccountBalanceService accountBalanceService;
-    public UserService() {
+
+    public UserService() throws SQLException {
         this.dbService = new UserRepositoryService();
         this.propertyService = new PropertyService(); // Initialize PropertyService
         this.bookingService = new BookingService();
         this.accountBalanceService = new AccountBalanceService();
     }
-    public void create(Scanner scanner) {
+
+    public void create(Scanner scanner) throws SQLException {
         System.out.println("Enter type of user [customer/landlord]:");
         String typeOfUser = scanner.nextLine().toLowerCase();
         if(!typeOfUserValidation(typeOfUser)) { return; }
         userInit(scanner, typeOfUser);  // initiate function for user creation
     }
 
-    public User read(Scanner scanner) { // read having a name
+    public User read(Scanner scanner) throws SQLException { // read having a name
         System.out.println("User name:");
         String name = scanner.nextLine();
         User user = dbService.getCustomerByName(name);
@@ -33,7 +37,7 @@ public class UserService {
         return user;
     }
 
-    public void delete(Scanner scanner) {
+    public void delete(Scanner scanner) throws SQLException {
         System.out.println("name:");
         String name = scanner.nextLine();
         System.out.println("typeOfUser:");
@@ -42,7 +46,7 @@ public class UserService {
         dbService.removeUser(typeOfUser, name);
     }
 
-    public void update(Scanner scanner) {
+    public void update(Scanner scanner) throws SQLException {
         System.out.println("Type old credentials:");
         System.out.println("typeOfUser:");
         String typeOfUser = scanner.nextLine();
@@ -74,7 +78,7 @@ public class UserService {
         String password = scanner.nextLine();
         return new User(name, email, password);
     }
-    private void userInit(Scanner scanner, String typeOfUser) {
+    private void userInit(Scanner scanner, String typeOfUser) throws SQLException {
         System.out.println("name:");
         String name = scanner.nextLine();
 
@@ -89,11 +93,19 @@ public class UserService {
             Customer customer = new Customer(user);
             user = customer;
         }
+
         dbService.addUser(user);
+
+        /* to do:
+        * try {
+            dbService.addUser(user);
+        } catch (SQLException e) {
+            System.out.println("Could not add the user!");
+        }*/
         System.out.println("Created " + user);
     }
 
-    public void viewUsers(Scanner scanner) {
+    public void viewUsers(Scanner scanner) throws SQLException {
         System.out.println("View users: 1-landlords || 2-customers");
         System.out.println("Please select an option:");
         int choice = scanner.nextInt();
@@ -158,7 +170,7 @@ public class UserService {
         }
     }
 
-    public void manageAccount(Scanner scanner) {
+    public void manageAccount(Scanner scanner) throws SQLException {
         User user = read(scanner);
         if (user == null)
             return;
@@ -189,12 +201,12 @@ public class UserService {
         return true;
     }
 
-    public void userRegistration(Scanner scanner) {
+    public void userRegistration(Scanner scanner) throws SQLException {
         System.out.println("Register:\n");
         create(scanner);
         scanner.nextLine();
     }
-    public void propertyRegistration(Scanner scanner) {  /// landlord property registration
+    public void propertyRegistration(Scanner scanner) throws SQLException {  /// landlord property registration
         User user = read(scanner);
         Landlord landlord;
         if (user instanceof Landlord) {
@@ -210,7 +222,7 @@ public class UserService {
             propertyService.create(scanner, landlord);
         }
     }
-    public void bookingRegistration(Scanner scanner) {
+    public void bookingRegistration(Scanner scanner) throws SQLException {
         System.out.println("Booking process: ");
         Object obj = read(scanner); // Read the object from the scanner
 
@@ -224,6 +236,35 @@ public class UserService {
             return;
 
         bookingService.create(scanner, customer); // Process the booking with the customer
+    }
+
+    public static void main(String[] args) {
+        try {
+            UserService userService = new UserService();
+            Scanner scanner = new Scanner(System.in);
+
+//            // Test create
+//            System.out.println("Testing create operation...");
+//            userService.create(scanner);
+//
+//            // Test read
+//            System.out.println("Testing read operation...");
+//            User user = userService.read(scanner);
+//            System.out.println("User found: " + user);
+//
+//            // Test update
+//            System.out.println("Testing update operation...");
+//            userService.update(scanner);
+
+            // Test delete
+            System.out.println("Testing delete operation...");
+            userService.delete(scanner);
+
+            // Close the scanner to prevent resource leak
+            scanner.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
 }

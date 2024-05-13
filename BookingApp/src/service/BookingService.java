@@ -3,6 +3,7 @@ import daoservices.BookingRepositoryService;
 import daoservices.PropertyRepositoryService;
 import model.*;
 
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
@@ -13,14 +14,14 @@ public class BookingService {
     private PropertyRepositoryService propertyService;
     private PaymentService paymentService;
 
-    public BookingService () {
+    public BookingService () throws SQLException {
         this.dbService = new BookingRepositoryService();
         this.propertyService = new PropertyRepositoryService();
         this.paymentService = new PaymentService();
     }
 
     // for create booking we must have a customer first
-    public void create (Scanner scanner, Customer customer) {
+    public void create (Scanner scanner, Customer customer) throws SQLException {
         Booking booking = setGeneralInfo(scanner, customer);
         dbService.addBooking(booking);
     }
@@ -48,7 +49,7 @@ public class BookingService {
         dbService.removeBooking(booking);
     }
 
-    public void update (Scanner scanner) {
+    public void update (Scanner scanner) throws SQLException {
         System.out.println("Enter registration number of Booking: ");
         int regNr = scanner.nextInt();
         Booking booking = dbService.getByRegistrationNr(regNr);
@@ -75,7 +76,7 @@ public class BookingService {
             }
         }
     }
-    private Booking setGeneralInfo(Scanner scanner, Customer customer) {
+    private Booking setGeneralInfo(Scanner scanner, Customer customer) throws SQLException {
         scanner.nextLine();
         System.out.println("Enter property name: ");
         String propName = scanner.nextLine();

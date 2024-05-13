@@ -1,3 +1,4 @@
+import java.sql.SQLException;
 import java.util.Scanner;
 
 import service.BookingService;
@@ -5,7 +6,7 @@ import service.PropertyService;
 import service.UserService;
 
 public class Application {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws SQLException {
 
         Scanner scanner = new Scanner(System.in);
         PropertyService propertyService = new PropertyService();
