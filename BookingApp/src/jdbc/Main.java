@@ -4,6 +4,8 @@ import utils.FileManagement;
 
 import java.sql.*;
 
+// pentru testare
+
 public class Main {
     public static void main(String[] args) {
 
@@ -22,7 +24,7 @@ public class Main {
                 System.out.println("id = " + id
                         + " nume = " + nume);
                 String persoana = id + ";" + nume ;
-                FileManagement.scriereFisierChar("~/src/persoane.csv",
+                FileManagement.scriereFisierChar("persoane.csv",
                         persoana);
             }
 
