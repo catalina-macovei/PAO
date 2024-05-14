@@ -3,6 +3,7 @@ package model;
 public class House extends Property{
     private double yardsize;
 
+    public House() {}
     public House(Property property) {
         super(property.getPrice(), property.getName(), property.getLandlord());
         property.getLandlord().addProperty(this);

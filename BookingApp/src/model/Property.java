@@ -6,6 +6,7 @@ public class Property {
     private double price;
     private String name;
 
+    public Property () {}
     public Property(double price, String name, Landlord landlord) {
         this.price = price;
         this.name = name;

@@ -6,6 +6,7 @@ import dao.HouseDao;
 import model.Apartment;
 import model.House;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -14,11 +15,10 @@ import static utils.Constants.*;
 
 public class PropertyRepositoryService {
     private ApartmentDao apartmentDao;
-    private HouseDao houseDao;
+    private HouseDao houseDao =  HouseDao.getInstance();
 
-    public PropertyRepositoryService() {
+    public PropertyRepositoryService() throws SQLException {
         this.apartmentDao = new ApartmentDao();
-        this.houseDao = new HouseDao();
     }
 
     public Apartment getApartmentByName(String name) {
@@ -26,12 +26,12 @@ public class PropertyRepositoryService {
         return apartment;
     }
 
-    public House getHouseByName(String name) {
+    public House getHouseByName(String name) throws SQLException {
         House house = houseDao.read(name);
         return house;
     }
 
-    public void removeProperty(String typeOfProperty, String name) {
+    public void removeProperty(String typeOfProperty, String name) throws SQLException {
         Property property = getProperty(typeOfProperty, name);
         if (property == null) return;
 
@@ -44,18 +44,30 @@ public class PropertyRepositoryService {
         System.out.println("Removed " + property);
     }
 
-    public void addProperty(Property property) {
+    public void addProperty(Property property) throws SQLException {
         if (property != null) {
             switch (property.getClass().getSimpleName()) {
                 case "Apartment" -> apartmentDao.create((Apartment) property);
-                case "House" -> houseDao.create((House) property);
+                case "House" -> houseDao.add((House) property);
                 default ->
                         throw new IllegalArgumentException("Unsupported property type: " + property.getClass().getSimpleName());
             }
         }
     }
 
-    public Property getProperty(String typeOfProperty, String name) {
+    public void updateProperty(Property property) throws SQLException {
+        if (property != null) {
+            System.out.println("update casa");
+            switch (property.getClass().getSimpleName()) {
+                //case "Apartment" -> apartmentDao.update((Apartment) property);
+                case "House" -> houseDao.update((House) property);
+                default ->
+                        throw new IllegalArgumentException("Unsupported property type: " + property.getClass().getSimpleName());
+            }
+        }
+    }
+
+    public Property getProperty(String typeOfProperty, String name) throws SQLException {
         Property property;
         switch (typeOfProperty) {
             case APARTMENT:
@@ -75,7 +87,7 @@ public class PropertyRepositoryService {
         return property;
     }
 
-    public List<Property> getAllProperties() {
+    public List<Property> getAllProperties() throws SQLException {
         List<Property> properties = new ArrayList<>();
         properties.addAll(apartmentDao.readAll());
         properties.addAll(houseDao.readAll());
@@ -85,7 +97,7 @@ public class PropertyRepositoryService {
     public List<Property> getAllApartments() {
         return apartmentDao.readAll();
     }
-    public List<Property> getAllHouses() {
+    public List<Property> getAllHouses() throws SQLException {
         return houseDao.readAll();
     }
 

@@ -52,6 +52,7 @@ public class LandlordDao implements DaoInterface<Landlord> {
         return landlords;
     }
 
+    @Override
     public Landlord read(String name) throws SQLException {
         String sql = "SELECT l.id, l.name, l.password, l.email, a.amount " +
                 "FROM landlord l " +
@@ -67,6 +68,7 @@ public class LandlordDao implements DaoInterface<Landlord> {
                 s.setName(rs.getString("name"));
                 s.setEmail(rs.getString("email"));
                 s.setPassword(rs.getString("password"));
+                s.setId(rs.getInt("id"));
 
                 double accountBalance = rs.getDouble("amount");
                 AccountBalance balance = new AccountBalance();
@@ -158,6 +160,37 @@ public class LandlordDao implements DaoInterface<Landlord> {
                 }
             }
         }
+    }
+
+    public Landlord readById(int id) throws SQLException {
+        String sql = "SELECT l.id, l.name, l.password, l.email, a.amount " +
+                "FROM landlord l " +
+                "JOIN account_balance a ON l.accountNr = a.accountNr " +
+                "WHERE l.id = ?";
+        ResultSet rs = null;
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setInt(1, id);
+            rs = statement.executeQuery();
+
+            while (rs.next()) {
+                Landlord s = new Landlord();
+                s.setName(rs.getString("name"));
+                s.setEmail(rs.getString("email"));
+                s.setPassword(rs.getString("password"));
+
+                double accountBalance = rs.getDouble("amount");
+                AccountBalance balance = new AccountBalance();
+                balance.setAmount(accountBalance);
+                s.setAccountBalance(balance);
+
+                return s;
+            }
+        } finally {
+            if (rs != null) {
+                rs.close();
+            }
+        }
+        return null;
     }
 
 }

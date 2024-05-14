@@ -1,7 +1,7 @@
 package model;
 
 public class Address {
-    private static int counter = 0;
+    private static int counter;
     private int id;
     private String street;
     private String city;

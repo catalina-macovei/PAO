@@ -5,6 +5,7 @@ public class User {
     private String email;
     private String password;
     private AccountBalance accountBalance;
+    private int id;
 
     public User() {
     }
@@ -48,5 +49,13 @@ public class User {
 
     public void setAccountBalance(AccountBalance accountBalance) {
         this.accountBalance = accountBalance;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 }

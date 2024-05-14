@@ -38,6 +38,7 @@ CREATE TABLE `booking`.`payment` (
 
 CREATE TABLE `booking`.`house` (
                                      `id` INT NOT NULL AUTO_INCREMENT,
+                                     `name` VARCHAR(45) NULL,
                                      `address`  INT NULL,
                                      `landlord` INT NULL,
                                      `price` DECIMAL(10, 2) NULL,

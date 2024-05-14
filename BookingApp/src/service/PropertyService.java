@@ -27,15 +27,15 @@ public class PropertyService {
         propertyInit(scanner, typeOfProperty, landlord);
     }
 
-    public void read(Scanner scanner){
+    public void read(Scanner scanner) throws SQLException {
         System.out.println("Enter property name:");
         String name = scanner.nextLine();
         dbService.getApartmentByName(name);
         //or
-        dbService.getHouseByName(name);
+        System.out.println(dbService.getHouseByName(name));
     }
 
-    public void delete(Scanner scanner) {
+    public void delete(Scanner scanner) throws SQLException {
         System.out.println("Enter property name:");
         String name = scanner.nextLine();
         System.out.println("Type of property: ");
@@ -44,16 +44,13 @@ public class PropertyService {
         dbService.removeProperty(typeOfProperty, name);
     }
 
-    public void update(Scanner scanner) {
+    public void update(Scanner scanner) throws SQLException {
         System.out.println("Enter property name:");
         String name = scanner.nextLine();
         System.out.println("Type of property: ");
         String typeOfProperty = scanner.nextLine().toLowerCase();
         if(checkIfExists(name, typeOfProperty)) {
             Property property = dbService.getProperty(typeOfProperty, name);
-            System.out.println("New name: ");
-            String n = scanner.nextLine();
-            property.setName(n);
             System.out.println("New price");
             Double p = scanner.nextDouble();
             property.setPrice(p);
@@ -99,7 +96,7 @@ public class PropertyService {
         dbService.addProperty(property);
     }
 
-    private boolean checkIfExists(String name, String typeOfProperty) {
+    private boolean checkIfExists(String name, String typeOfProperty) throws SQLException {
         if (typeOfProperty.equals(APARTMENT) && dbService.getApartmentByName(name) != null) {return true;}
         if (typeOfProperty.equals(HOUSE) && dbService.getHouseByName(name) != null) {return true;}
         return false;
@@ -111,13 +108,15 @@ public class PropertyService {
         apartment.setFloorNr(fnr);
     }
 
-    private void houseInit(Scanner scanner, House house) {
+    private void houseInit(Scanner scanner, House house) throws SQLException {
         System.out.println("House yardSize: ");
         double ys = scanner.nextDouble();
         house.setYardsize(ys);
+
+        dbService.updateProperty((Property) house);
     }
 
-    public void viewPropertyList(Scanner scanner) {
+    public void viewPropertyList(Scanner scanner) throws SQLException {
         System.out.println("\nView available properties: 1-apartment || 2-house || 3-all");
         System.out.println("Please select an option:");
         int choice = scanner.nextInt();
@@ -166,6 +165,62 @@ public class PropertyService {
         properties.sort(Comparator.comparing(Property::getName));
         for (Property property : properties) {
             System.out.println(property);
+        }
+    }
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        try {
+            PropertyService propertyService = new PropertyService();
+
+            while (true) {
+                System.out.println("\nChoose an option:");
+                System.out.println("1. Create Property");
+                System.out.println("2. Read Property");
+                System.out.println("3. Update Property");
+                System.out.println("4. Delete Property");
+                System.out.println("5. View Property List");
+                System.out.println("6. Exit");
+
+                int choice = scanner.nextInt();
+                scanner.nextLine();  // Consume newline
+
+                switch (choice) {
+                    case 1:
+                        // Creating a new property
+                        System.out.println("Enter landlord details:");
+                        // Assuming landlord creation logic, you need to replace it with actual logic
+                        Landlord landlord = new Landlord();
+                        propertyService.create(scanner, landlord);
+                        break;
+                    case 2:
+                        // Reading a property
+                        propertyService.read(scanner);
+                        break;
+                    case 3:
+                        // Updating a property
+                        propertyService.update(scanner);
+                        break;
+                    case 4:
+                        // Deleting a property
+                        propertyService.delete(scanner);
+                        break;
+                    case 5:
+                        // Viewing property list
+                        propertyService.viewPropertyList(scanner);
+                        break;
+                    case 6:
+                        // Exiting the application
+                        System.out.println("Exiting...");
+                        scanner.close();
+                        System.exit(0);
+                        break;
+                    default:
+                        System.out.println("Invalid option! Please try again.");
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Database error: " + e.getMessage());
         }
     }
 }

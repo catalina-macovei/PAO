@@ -12,7 +12,7 @@ import java.util.List;
 import static utils.Constants.LANDLORD;
 
 public class UserRepositoryService {
-
+    private static int counter;
     private LandlordDao landlordDao = LandlordDao.getInstance();
     private CustomerDao customerDao = CustomerDao.getInstance();
 
