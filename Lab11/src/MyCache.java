@@ -11,30 +11,14 @@ public class MyCache extends Thread {
     public MyCache() {
     }
 
-    public MyCache(Map<Integer, StoredObject> cache, int counter) {
-        this.cache = cache;
-        this.counter = counter;
-    }
-
     public Map<Integer, StoredObject> getCache() {
         return cache;
-    }
-
-    public void setCache(Map<Integer, StoredObject> cache) {
-        this.cache = cache;
     }
 
     public void addObject(StoredObject obj) {
         cache.put(counter++, obj);
     }
 
-    public Object getObject(int cheie) {
-        StoredObject storedObject = cache.get(cheie);
-        if (storedObject != null && !storedObject.isExpired()) {
-            return storedObject.getMyInfo();
-        }
-        return null;
-    }
 
     @Override
     public void run() {
@@ -61,7 +45,7 @@ public class MyCache extends Thread {
 
             if (allExpired) {
                 System.out.println("All objects are expired. Stopping the thread...");
-                break; //stopam theradul
+                break; //stopam threadul
             }
         }
     }
