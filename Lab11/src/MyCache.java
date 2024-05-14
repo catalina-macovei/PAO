@@ -6,10 +6,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class MyCache extends Thread {
     private Map<Integer, StoredObject> cache = new ConcurrentHashMap<>();
-    private int counter = 0;
-
-    public MyCache() {
-    }
+    private int counter;
 
     public Map<Integer, StoredObject> getCache() {
         return cache;
