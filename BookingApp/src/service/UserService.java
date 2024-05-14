@@ -27,12 +27,19 @@ public class UserService {
         userInit(scanner, typeOfUser);  // initiate function for user creation
     }
 
-    public User read(Scanner scanner) throws SQLException { // read having a name
+    public User read(Scanner scanner) throws SQLException {
         System.out.println("User name:");
         String name = scanner.nextLine();
-        User user = dbService.getCustomerByName(name);
-        if (user == null) {
-            user = dbService.getLandlordByName(name);
+        User user = null;
+
+        try {
+            user = dbService.getCustomerByName(name);
+            //if no customer found tehn attempt to get the landlord by name
+            if (user == null) {
+                user = dbService.getLandlordByName(name);
+            }
+        } catch (SQLException e) {
+            System.err.println("An error occurred while reading user: " + e.getMessage());
         }
         return user;
     }
@@ -42,27 +49,50 @@ public class UserService {
         String name = scanner.nextLine();
         System.out.println("typeOfUser:");
         String typeOfUser = scanner.nextLine();
-        if(!typeOfUserValidation(typeOfUser)) { return; }
-        dbService.removeUser(typeOfUser, name);
+
+        if (!typeOfUserValidation(typeOfUser)) {
+            System.out.println("Invalid user type.");
+            return;
+        }
+        try {
+            dbService.removeUser(typeOfUser, name);
+            System.out.println("User successfully deleted.");
+        } catch (SQLException e) {
+            System.err.println("An error occurred while attempting to delete the user: " + e.getMessage());
+        }
     }
 
     public void update(Scanner scanner) throws SQLException {
         System.out.println("Type old credentials:");
         System.out.println("typeOfUser:");
         String typeOfUser = scanner.nextLine();
-        if(!typeOfUserValidation(typeOfUser)) { return; }
+
+        if (!typeOfUserValidation(typeOfUser)) {
+            System.out.println("Invalid user type.");
+            return;
+        }
         System.out.println("name:");
         String name = scanner.nextLine();
-        User user = dbService.getUser(typeOfUser, name);
-        if (user == null) { System.out.println("No user found!"); return;}
-
+        User user = null;
+        try {
+            user = dbService.getUser(typeOfUser, name);
+        } catch (SQLException e) {
+            System.err.println("An error occurred while retrieving the user: " + e.getMessage());
+        }
+        if (user == null) {
+            return;
+        }
         User userGeneralInfo = setGeneralInfo(name, scanner);
-        System.out.println("name:");
-        String name1 = scanner.nextLine();
-        user.setName(name1);
         user.setEmail(userGeneralInfo.getEmail());
         user.setPassword(userGeneralInfo.getPassword());
+        try {
+            dbService.updateUser(user);
+            System.out.println("User successfully updated.");
+        } catch (SQLException e) {
+            System.err.println("An error occurred while updating the user: " + e.getMessage());
+        }
     }
+
     public boolean typeOfUserValidation(String typeOfUser) {
         if(! typeOfUser.equals(LANDLORD) && !typeOfUser.equals(CUSTOMER)){
             System.out.println("Wrong type");
@@ -76,7 +106,15 @@ public class UserService {
         String email = scanner.nextLine();
         System.out.println("password:");
         String password = scanner.nextLine();
-        return new User(name, email, password);
+
+        Random random = new Random();
+        int randomNumber = random.nextInt(10000); // Generates a random number between 0 and 999
+        AccountBalance accountBalance = new AccountBalance(0);
+        accountBalance.setAccountNr(randomNumber);
+
+        User user = new User(name, email, password, accountBalance);
+
+        return user;
     }
     private void userInit(Scanner scanner, String typeOfUser) throws SQLException {
         System.out.println("name:");
@@ -94,30 +132,41 @@ public class UserService {
             user = customer;
         }
 
-        dbService.addUser(user);
-
-        /* to do:
-        * try {
+       try {
             dbService.addUser(user);
         } catch (SQLException e) {
             System.out.println("Could not add the user!");
-        }*/
+        }
         System.out.println("Created " + user);
     }
 
     public void viewUsers(Scanner scanner) throws SQLException {
         System.out.println("View users: 1-landlords || 2-customers");
         System.out.println("Please select an option:");
-        int choice = scanner.nextInt();
-        switch(choice) {
-            case 1:
-                readAllLandlords(dbService.getAllLandlords());
-                break;
-            case 2:
-                readAllCustomers(dbService.getAllCustomers());
-                break;
-            default:
-                System.out.println("Invalid option selected.");
+
+        int choice = -1;
+        if (scanner.hasNextInt()) {
+            choice = scanner.nextInt();
+        } else {
+            System.out.println("Invalid input. Please enter a number.");
+            scanner.next(); // Clear invalid input
+            return;
+        }
+
+        try {
+            switch (choice) {
+                case 1:
+                    readAllLandlords(dbService.getAllLandlords());
+                    break;
+                case 2:
+                    readAllCustomers(dbService.getAllCustomers());
+                    break;
+                default:
+                    System.out.println("Invalid option selected.");
+            }
+        } catch (SQLException e) {
+            System.err.println("An error occurred while retrieving the users: " + e.getMessage());
+            throw e; // Rethrow the exception to ensure the caller is aware of the failure
         }
     }
 
@@ -149,7 +198,7 @@ public class UserService {
         }
     }
 
-    public void readCustomerBookings(Scanner scanner) {
+    public void readCustomerBookings(Scanner scanner) throws SQLException {
         System.out.println("User name:");
         String name = scanner.nextLine();
         Customer user = dbService.getCustomerByName(name);
@@ -243,24 +292,7 @@ public class UserService {
             UserService userService = new UserService();
             Scanner scanner = new Scanner(System.in);
 
-//            // Test create
-//            System.out.println("Testing create operation...");
-//            userService.create(scanner);
-//
-//            // Test read
-//            System.out.println("Testing read operation...");
-//            User user = userService.read(scanner);
-//            System.out.println("User found: " + user);
-//
-//            // Test update
-//            System.out.println("Testing update operation...");
-//            userService.update(scanner);
-
-            // Test delete
-            System.out.println("Testing delete operation...");
-            userService.delete(scanner);
-
-            // Close the scanner to prevent resource leak
+            userService.viewUsers(scanner);
             scanner.close();
         } catch (SQLException e) {
             e.printStackTrace();

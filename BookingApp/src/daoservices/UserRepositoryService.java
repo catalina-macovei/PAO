@@ -14,12 +14,12 @@ import static utils.Constants.LANDLORD;
 public class UserRepositoryService {
 
     private LandlordDao landlordDao = LandlordDao.getInstance();
-    private CustomerDao customerDao;
+    private CustomerDao customerDao = CustomerDao.getInstance();
 
     public UserRepositoryService() throws SQLException {
     }
 
-    public Customer getCustomerByName(String name) {
+    public Customer getCustomerByName(String name) throws SQLException {
         Customer customer = customerDao.read(name);
         return customer;
     }
@@ -50,7 +50,17 @@ public class UserRepositoryService {
         if (user != null) {
             switch (user) {
                 case Landlord landlord -> landlordDao.add(landlord);
-                case Customer customer -> customerDao.create(customer);
+                case Customer customer -> customerDao.add(customer);
+                default -> throw new IllegalStateException("Unexpected value: " + user);
+            }
+        }
+    }
+
+    public void updateUser(User user) throws SQLException {
+        if (user != null) {
+            switch (user) {
+                case Landlord landlord -> landlordDao.update(landlord);
+                case Customer customer -> customerDao.update(customer);
                 default -> throw new IllegalStateException("Unexpected value: " + user);
             }
         }
@@ -72,7 +82,7 @@ public class UserRepositoryService {
         return landlordDao.readAll();
     }
 
-    public List<Customer> getAllCustomers() {
+    public List<Customer> getAllCustomers() throws SQLException {
         return customerDao.readAll();
     }
 }

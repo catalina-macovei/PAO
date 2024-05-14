@@ -7,11 +7,11 @@ import java.util.Set;
 public class Landlord extends User{
     private Set<Property> properties = new HashSet<>();
     public Landlord(User user) {
-        super(user.getName(), user.getEmail(), user.getPassword());
+        super(user.getName(), user.getEmail(), user.getPassword(), user.getAccountBalance());
     }
 
     public Landlord(String name, String email, String password, AccountBalance accountBalance, Set<Property> properties) {
-        super(name, email, password);
+        super(name, email, password, accountBalance);
         this.properties = properties;
     }
 
@@ -26,6 +26,7 @@ public class Landlord extends User{
     public void addProperty(Property p) {
         properties.add(p);
     }
+
 
     @Override
     public String toString() {

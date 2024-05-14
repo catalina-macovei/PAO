@@ -52,49 +52,14 @@ public class LandlordDao implements DaoInterface<Landlord> {
         return landlords;
     }
 
-    @Override
-//    public Landlord read (String name) throws SQLException {
-//        String sql = "SELECT l.id, l.name, l.password, l.email, a.amount " +
-//                "FROM landlord l " +
-//                "JOIN account_balance a ON l.accountNr = a.accountNr WHERE l.name = ?";
-//        ResultSet rs = null;
-//        System.out.println("called");
-//        try(PreparedStatement statement = connection.prepareStatement(sql);) {
-//            statement.setString(1, name);
-//            rs = statement.executeQuery();
-//
-//            while (rs.next()){
-//                Landlord s = new Landlord();
-//
-//                s.setName(rs.getString("name"));
-//                s.setEmail(rs.getString("email"));
-//                s.setPassword(rs.getString("password"));
-//
-//                double accountBalance = rs.getDouble("amount");
-//                AccountBalance balance = new AccountBalance();
-//                balance.setAmount(accountBalance);
-//                s.setAccountBalance(balance);
-//
-//                System.out.println("s=" + s);
-//                return  s;
-//            }
-//        }finally {
-//            if(rs != null) {
-//                rs.close();
-//            }
-//        }
-//        return null;
-//    }
     public Landlord read(String name) throws SQLException {
         String sql = "SELECT l.id, l.name, l.password, l.email, a.amount " +
                 "FROM landlord l " +
                 "JOIN account_balance a ON l.accountNr = a.accountNr " +
                 "WHERE l.name = ?";
         ResultSet rs = null;
-        System.out.println("called with name: " + name);
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setString(1, name);
-            System.out.println("Executing SQL query: " + sql);
             rs = statement.executeQuery();
 
             while (rs.next()) {
@@ -108,7 +73,6 @@ public class LandlordDao implements DaoInterface<Landlord> {
                 balance.setAmount(accountBalance);
                 s.setAccountBalance(balance);
 
-                System.out.println("Found Landlord: " + s);
                 return s;
             }
         } finally {
@@ -116,7 +80,6 @@ public class LandlordDao implements DaoInterface<Landlord> {
                 rs.close();
             }
         }
-        System.out.println("No landlord found with name: " + name);
         return null;
     }
 
@@ -150,13 +113,50 @@ public class LandlordDao implements DaoInterface<Landlord> {
 
     @Override
     public void add(Landlord land) throws SQLException {
-        String sql = "INSERT INTO booking.landlord(name, password, email) VALUES (?, ?, ?);";
+        String sql1 = "INSERT INTO booking.account_balance(accountNr, amount) VALUES(?, ?)";
+        String sql2 = "INSERT INTO booking.landlord(name, password, email, accountNr) VALUES (?, ?, ?, ?)";
 
-        try(PreparedStatement statement = connection.prepareStatement(sql);) {
-            statement.setString(1, land.getName());
-            statement.setString(2, land.getPassword());
-            statement.setString(3, land.getEmail());
-            statement.executeUpdate();
+        // Start a transaction
+        connection.setAutoCommit(false);
+
+        try (
+                PreparedStatement statement1 = connection.prepareStatement(sql1);
+                PreparedStatement statement2 = connection.prepareStatement(sql2);
+        ) {
+            // Insert into account_balance table
+            AccountBalance account = land.getAccountBalance();
+            statement1.setInt(1, account.getAccountNr());
+            statement1.setDouble(2, account.getAmount());
+            statement1.executeUpdate();
+
+            // Insert into landlord table
+            statement2.setString(1, land.getName());
+            statement2.setString(2, land.getPassword());
+            statement2.setString(3, land.getEmail());
+            statement2.setInt(4, account.getAccountNr());
+            statement2.executeUpdate();
+
+            // Commit transaction
+            connection.commit();
+        } catch (SQLException e) {
+            // Roll back the transaction if any error occurs
+            if (connection != null) {
+                try {
+                    connection.rollback();
+                } catch (SQLException ex) {
+                    ex.printStackTrace();
+                }
+            }
+            e.printStackTrace();
+        } finally {
+            // Restore auto-commit mode
+            if (connection != null) {
+                try {
+                    connection.setAutoCommit(true);
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
         }
     }
 

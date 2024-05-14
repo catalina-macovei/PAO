@@ -6,12 +6,13 @@ import java.util.List;
 public class Customer extends User{
     private List<Booking> bookings = new ArrayList<>();
 
+    public Customer() {}
     public Customer(User user) {
-        super(user.getName(), user.getEmail(), user.getPassword());
+        super(user.getName(), user.getEmail(), user.getPassword(), user.getAccountBalance());
     }
 
     public Customer(String name, String email, String password, AccountBalance accountBalance, List<Booking> bookings) {
-        super(name, email, password);
+        super(name, email, password, accountBalance);
         this.bookings = bookings;
     }
 
