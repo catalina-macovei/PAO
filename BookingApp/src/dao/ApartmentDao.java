@@ -93,6 +93,43 @@ public class ApartmentDao implements DaoInterface<Apartment> {
         return null;
     }
 
+    public Apartment readById(int id) throws SQLException {
+        String sql = "SELECT l.id, l.name, l.address, l.landlord, l.price, l.floorNr " +
+                "FROM apartment l " +
+                "WHERE l.id = ?";
+        ResultSet rs = null;
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setInt(1, id);
+            rs = statement.executeQuery();
+
+            while (rs.next()) {
+                String name = rs.getString("name");
+                Double price = rs.getDouble("price");
+                int floorNr = rs.getInt("floorNr");
+                int landlordFK = rs.getInt("landlord");
+                int addressFK = rs.getInt("address");
+                //Create a new Apartment object and set its properties using setters
+                Landlord landlord = landlordDao.readById(landlordFK);
+                Address address = addressDao.read(String.valueOf(addressFK));
+
+                Apartment apartment = new Apartment();
+                apartment.setName(name);
+                apartment.setPrice(price);
+                apartment.setFloorNr(floorNr);
+                apartment.setLandlord(landlord);
+                apartment.setAddress(address);
+
+                return apartment;
+            }
+        } finally {
+            if (rs != null) {
+                rs.close();
+            }
+        }
+        return null;
+    }
+
+
 
     @Override
     public void delete(Apartment h) throws SQLException {

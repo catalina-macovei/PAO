@@ -3,26 +3,33 @@ package daoservices;
 import dao.BookingDao;
 import model.Booking;
 
+import java.sql.SQLException;
+
 public class BookingRepositoryService {
     private BookingDao bookingDao;
 
-    public BookingRepositoryService() {
+    public BookingRepositoryService() throws SQLException {
         this.bookingDao = new BookingDao(); // Initialize your Booking DAO here
     }
 
-    public Booking getByRegistrationNr(int nr) {
-        Booking booking = bookingDao.read(nr);
+    public Booking getByRegistrationNr(int nr) throws SQLException {
+        Booking booking = bookingDao.read(String.valueOf(nr));
         if (booking == null) {
             System.out.println("Booking with registration number " + nr + " not found.");
         }
         return booking;
     }
 
-    public void addBooking(Booking booking) {
-        bookingDao.create(booking);
+    public void addBooking(Booking booking) throws SQLException {
+        bookingDao.add(booking);
     }
 
-    public void removeBooking(Booking booking) {
+    public void updateBooking(Booking booking) throws SQLException {
+        bookingDao.update(booking);
+    }
+
+
+    public void removeBooking(Booking booking) throws SQLException {
         bookingDao.delete(booking);
         System.out.println("Removed Booking: " + booking);
     }

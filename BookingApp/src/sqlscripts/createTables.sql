@@ -60,18 +60,16 @@ CREATE TABLE `booking`.`apartment` (
 
 CREATE TABLE `booking`.`booking` (
                                        `id` INT NOT NULL AUTO_INCREMENT,
-                                       `landlord` INT NULL,
                                        `customer` INT NULL,
                                        `house` INT NULL,
                                        `apartment` INT NULL,
                                        `start_date` DATE NULL,
                                        `end_date` DATE NULL,
                                        `payment` INT NULL,
-                                       FOREIGN KEY (`payment`) REFERENCES payment (`id`) ON DELETE CASCADE,
+                                       FOREIGN KEY (`payment`) REFERENCES payment (`id`) ,
                                        FOREIGN KEY (`apartment`) REFERENCES apartment (`id`),
                                        FOREIGN KEY (`house`) REFERENCES house (`id`),
                                        FOREIGN KEY (`customer`) REFERENCES customer (`id`) ON DELETE CASCADE,
-                                       FOREIGN KEY (`landlord`) REFERENCES landlord (`id`) ON DELETE CASCADE,
                                        PRIMARY KEY (`id`));
 
 ALTER TABLE booking

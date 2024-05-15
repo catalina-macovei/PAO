@@ -28,11 +28,12 @@ public class PaymentDao implements DaoInterface<Payment> {
 
     @Override
     public void add(Payment payment) throws SQLException {
-        String sql = "INSERT INTO booking.payment(amount, status) VALUES (? , ?);";
+        String sql = "INSERT INTO booking.payment(amount, status, id) VALUES (? , ?, ?);";
 
         try(PreparedStatement statement = connection.prepareStatement(sql);) {
             statement.setDouble(1, payment.getAmount());
             statement.setString(2, payment.getStatus());
+            statement.setInt(3, payment.getId());
             statement.executeUpdate();
         }
     }
@@ -59,7 +60,6 @@ public class PaymentDao implements DaoInterface<Payment> {
         }
         return null;
     }
-
 
     @Override
     public void delete(Payment acc) throws SQLException {

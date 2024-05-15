@@ -12,6 +12,7 @@ public class Booking {
     private LocalDate endDate;
     private Payment payment;
 
+    public Booking () {}
     public Booking(Customer customer, Property property, LocalDate startDate, LocalDate endDate, Payment payment) {
         this.customer = customer;
         this.property = property;

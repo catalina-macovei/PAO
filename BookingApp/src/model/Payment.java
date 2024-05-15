@@ -22,6 +22,10 @@ public class Payment {
         return id;
     }
 
+    public void setId(int id) {
+        this.id = id;
+    }
+
     public double getAmount() {
         return amount;
     }
@@ -45,4 +49,6 @@ public class Payment {
                 ", status='" + status + '\'' +
                 '}';
     }
+
+
 }

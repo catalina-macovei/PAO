@@ -4,6 +4,7 @@ import daoservices.PaymentRepositoryService;
 import model.*;
 
 import java.sql.SQLException;
+import java.util.Random;
 import java.util.Scanner;
 public class PaymentService {
     private PaymentRepositoryService dbService;
@@ -11,7 +12,8 @@ public class PaymentService {
 
     public Payment create(Scanner scanner, double requestedBookingPayment) throws SQLException { // maybe i need the option to pay from account balance, but maybe i'll do it in application
         Payment payment = processBookingPayment(scanner, requestedBookingPayment);
-        payment.setStatus("pending");
+        payment.setStatus("success");
+        System.out.println("payment amount="+payment+" id="+payment.getId());
         dbService.addPayment(payment);
         return payment;
     }
@@ -43,14 +45,15 @@ public class PaymentService {
         System.out.println("You have to pay: " + totalBookingAmount + "\nIntroduce the sum:");
         double amount = scanner.nextDouble();
         Payment payment = new Payment(amount);
+        Random random = new Random();
+        int randomNumber = random.nextInt(100000); // Generates a random number between 0 and 99999
+        payment.setId(randomNumber);
 
         if (amount >= totalBookingAmount) {
             payment.setStatus("success");
             System.out.println("Payment success!");
-            dbService.addPayment(payment);
         } else {
             payment.setStatus("failed");
-            dbService.addPayment(payment);
             System.out.println("Payment failed!");
         }
         return payment;

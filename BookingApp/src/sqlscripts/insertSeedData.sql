@@ -34,6 +34,6 @@ INSERT INTO house (name, address, landlord, price, yardSize) VALUES ("house 5",5
 INSERT INTO apartment (name, address, landlord, price, floorNr) VALUES ("apartment 1", 6, 1, 1200.00, 2);
 INSERT INTO apartment (name, address, landlord, price, floorNr) VALUES ("apartment 2", 7, 3, 1500.00, 3);
 
-INSERT INTO booking (landlord, customer, house, apartment, start_date, end_date, payment) VALUES (1, 1, NULL, 1, '2023-06-01', '2024-01-30', 1);
-INSERT INTO booking (landlord, customer, house, apartment, start_date, end_date, payment) VALUES (2, 2, 2, NULL, '2023-07-01', '2024-03-30', 2);
-INSERT INTO booking (landlord, customer, house, apartment, start_date, end_date, payment) VALUES (3, 3, NULL, 2, '2023-08-01', '2024-03-30', 3);
+INSERT INTO booking (customer, house, apartment, start_date, end_date, payment) VALUES (1, NULL, 1, '2023-06-01', '2024-01-30', 1);
+INSERT INTO booking (customer, house, apartment, start_date, end_date, payment) VALUES (2, 2, NULL, '2023-07-01', '2024-03-30', 2);
+INSERT INTO booking (customer, house, apartment, start_date, end_date, payment) VALUES (3, NULL, 2, '2023-08-01', '2024-03-30', 3);

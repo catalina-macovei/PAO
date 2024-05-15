@@ -77,12 +77,49 @@ public class HouseDao implements DaoInterface<House> {
                 Address address = addressDao.read(String.valueOf(addressFK));
 
                 House house = new House();
+                house.setId(id);
                 house.setName(name);
                 house.setPrice(price);
                 house.setYardsize(yardSize);
                 house.setLandlord(landlord);
                 house.setAddress(address);
 
+                return house;
+            }
+        } finally {
+            if (rs != null) {
+                rs.close();
+            }
+        }
+        return null;
+    }
+
+    public House readById(int id) throws SQLException {
+        String sql = "SELECT l.id, l.name, l.address, l.landlord, l.price, l.yardSize " +
+                "FROM house l " +
+                "WHERE l.id = ?";
+        ResultSet rs = null;
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setInt(1, id);
+            rs = statement.executeQuery();
+
+            while (rs.next()) {
+                String name = rs.getString("name");
+                Double price = rs.getDouble("price");
+                Double yardSize = rs.getDouble("yardSize");
+                int landlordFK = rs.getInt("landlord");
+                int addressFK = rs.getInt("address");
+                //Create a new House object and set its properties using setters
+                Landlord landlord = landlordDao.readById(landlordFK);
+                Address address = addressDao.read(String.valueOf(addressFK));
+
+                House house = new House();
+                house.setName(name);
+                house.setPrice(price);
+                house.setYardsize(yardSize);
+                house.setLandlord(landlord);
+                house.setAddress(address);
+                house.setId(id);
                 return house;
             }
         } finally {

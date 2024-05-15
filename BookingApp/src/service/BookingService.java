@@ -1,4 +1,6 @@
 package service;
+
+import daoservices.AccountBalanceRepositoryService;
 import daoservices.BookingRepositoryService;
 import daoservices.PropertyRepositoryService;
 import model.*;
@@ -8,32 +10,39 @@ import java.time.LocalDate;
 import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.util.Random;
 import java.util.Scanner;
+
 public class BookingService {
     private BookingRepositoryService dbService;
     private PropertyRepositoryService propertyService;
     private PaymentService paymentService;
+    private AccountBalanceRepositoryService acountBalanceService;
+    private static UserService userService;
 
-    public BookingService () throws SQLException {
-        this.dbService = new BookingRepositoryService();
-        this.propertyService = new PropertyRepositoryService();
-        this.paymentService = new PaymentService();
+    public BookingService(BookingRepositoryService dbService, PropertyRepositoryService propertyService,
+                          PaymentService paymentService, AccountBalanceRepositoryService accountBalanceService, UserService userService) {
+        this.dbService = dbService;
+        this.propertyService = propertyService;
+        this.paymentService = paymentService;
+        this.acountBalanceService = accountBalanceService;
+        this.userService = userService;
     }
 
     // for create booking we must have a customer first
-    public void create (Scanner scanner, Customer customer) throws SQLException {
+    public void create(Scanner scanner, Customer customer) throws SQLException {
         Booking booking = setGeneralInfo(scanner, customer);
         dbService.addBooking(booking);
     }
 
-    public void read (Scanner scanner) {
+    public void read(Scanner scanner) throws SQLException {
         System.out.println("Enter registration number of Booking: ");
         int regNr = scanner.nextInt();
         Booking booking = dbService.getByRegistrationNr(regNr);
         System.out.println("Booking: " + booking);
     }
 
-    public void delete (Scanner scanner) {
+    public void delete(Scanner scanner) throws SQLException {
         System.out.println("Enter registration number of Booking: ");
         int regNr = scanner.nextInt();
         Booking booking = dbService.getByRegistrationNr(regNr);
@@ -49,33 +58,55 @@ public class BookingService {
         dbService.removeBooking(booking);
     }
 
-    public void update (Scanner scanner) throws SQLException {
+    public void update(Scanner scanner) throws SQLException {
         System.out.println("Enter registration number of Booking: ");
         int regNr = scanner.nextInt();
         Booking booking = dbService.getByRegistrationNr(regNr);
 
-        if(booking != null) {
+        if (booking != null) {
             Customer customer = booking.getCustomer();
             System.out.println("\nBooking update:");
-            booking = setGeneralInfo(scanner, customer);
+
+            System.out.println("Set booking start date (yyyy-MM-dd): ");
+            LocalDate startDate = readDate(scanner);
+            System.out.println("Set booking end date (yyyy-MM-dd): ");
+            LocalDate endDate = readDate(scanner);
+            Property property = booking.getProperty();
+            double totalBookingAmount = totalAmountBooking(startDate, endDate, property.getPrice());
+            Payment payment = paymentService.create(scanner, totalBookingAmount);
+
+            if (payment.getStatus().equals("success")) {
+                booking.setStartDate(startDate);
+                booking.setEndDate(endDate);
+                updateAccountBalanceOnBooking(scanner, booking);
+                dbService.updateBooking(booking);
+            }
+        } else {
+            System.out.println("Couldn't update booking!");
         }
     }
 
-    private void updateAccountBalanceOnBooking(Scanner scanner, Booking booking) {  // the update is for landlord
+    private void updateAccountBalanceOnBooking(Scanner scanner, Booking booking) throws SQLException {  // the update is for landlord
         Property property = booking.getProperty();
         if (property != null) {
             Landlord landlord = property.getLandlord();
-            AccountBalance accountBalance =  landlord.getAccountBalance();
+            AccountBalance accountBalance = landlord.getAccountBalance();
             if (accountBalance != null) {
                 double amount = accountBalance.getAmount();
                 accountBalance.setAmount(amount + booking.getPayment().getAmount());
+                acountBalanceService.update(accountBalance);
                 landlord.setAccountBalance(accountBalance);
             } else {
                 AccountBalance newaccountB = new AccountBalance(booking.getPayment().getAmount());
+                Random random = new Random();
+                int randomNumber = random.nextInt(10000); // Generates a random number between 0 and 999
+                accountBalance.setAccountNr(randomNumber);
+                acountBalanceService.createAccountBalance(accountBalance);
                 landlord.setAccountBalance(newaccountB);
             }
         }
     }
+
     private Booking setGeneralInfo(Scanner scanner, Customer customer) throws SQLException {
         scanner.nextLine();
         System.out.println("Enter property name: ");
@@ -95,6 +126,9 @@ public class BookingService {
             if (payment.getStatus().equals("success")) {
                 Booking booking = new Booking(customer, property, startDate, endDate, payment);
                 updateAccountBalanceOnBooking(scanner, booking);
+                Random random = new Random();
+                int randomNumber = random.nextInt(100000); // Generates a random number between 0 and 99999
+                booking.setRegistrationNr(randomNumber);
                 return booking;
             }
         }
@@ -123,6 +157,7 @@ public class BookingService {
 
         return date;
     }
+
     private long calculateDays(LocalDate startDate, LocalDate endDate) {
         return endDate.toEpochDay() - startDate.toEpochDay();
     }
@@ -145,5 +180,54 @@ public class BookingService {
         return totalAmount;
     }
 
+    public static void main(String[] args) {
+        try {
+            BookingRepositoryService dbService = new BookingRepositoryService();
+            PropertyRepositoryService propertyService = new PropertyRepositoryService();
+            PaymentService paymentService = new PaymentService();
+            AccountBalanceRepositoryService accountBalanceService = new AccountBalanceRepositoryService();
+            UserService userService = new UserService();
+
+            BookingService bookingService = new BookingService(dbService, propertyService, paymentService, accountBalanceService, userService);
+            Scanner scanner = new Scanner(System.in);
+
+            while (true) {
+                System.out.println("Booking Service Menu:");
+                System.out.println("1. Create Booking");
+                System.out.println("2. Read Booking");
+                System.out.println("3. Update Booking");
+                System.out.println("4. Delete Booking");
+                System.out.println("5. Exit");
+                System.out.print("Choose an option: ");
+                int choice = scanner.nextInt();
+                scanner.nextLine(); // Consume newline
+
+                switch (choice) {
+                    case 1:
+                        // Mock customer for demonstration purposes
+                        Customer customer = (Customer) userService.read(scanner);
+                        bookingService.create(scanner, customer);
+                        break;
+                    case 2:
+                        bookingService.read(scanner);
+                        break;
+                    case 3:
+                        bookingService.update(scanner);
+                        break;
+                    case 4:
+                        bookingService.delete(scanner);
+                        break;
+                    case 5:
+                        System.out.println("Exiting...");
+                        scanner.close();
+                        return;
+                    default:
+                        System.out.println("Invalid option. Please try again.");
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 
 }

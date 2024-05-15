@@ -16,7 +16,7 @@ public class UserService {
     public UserService() throws SQLException {
         this.dbService = new UserRepositoryService();
         this.propertyService = new PropertyService(); // Initialize PropertyService
-        this.bookingService = new BookingService();
+        //this.bookingService = new BookingService();
         this.accountBalanceService = new AccountBalanceService();
     }
 
