@@ -25,13 +25,15 @@ public class AddressDao implements DaoInterface <Address>{
 
     @Override
     public void add(Address address) throws SQLException {
-        String sql = "INSERT INTO booking.address(country, city, street, number) VALUES (?, ?, ?, ?);";
+        String sql = "INSERT INTO booking.address( country, city, street, number, id) VALUES (?, ?, ?, ?, ?);";
 
         try(PreparedStatement statement = connection.prepareStatement(sql);) {
+
             statement.setString(1, address.getCountry());
             statement.setString(2, address.getCity());
             statement.setString(3, address.getStreet());
             statement.setString(4, address.getNumber());
+            statement.setInt(5, address.getId());
             statement.executeUpdate();
         }
     }

@@ -67,6 +67,7 @@ public class UserRepositoryService {
     }
 
     public User getUser(String typeOfUser, String name) throws SQLException {
+        System.out.println("before comparing");
         User user;
         if (typeOfUser.equals(LANDLORD)) {
             user = getLandlordByName(name);

@@ -6,7 +6,6 @@ public class House extends Property{
     public House() {}
     public House(Property property) {
         super(property.getPrice(), property.getName(), property.getLandlord());
-        property.getLandlord().addProperty(this);
     }
 
     public double getYardsize() {

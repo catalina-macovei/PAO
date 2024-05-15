@@ -3,6 +3,7 @@ import daoservices.AddressRepositoryService;
 import model.*;
 
 import java.sql.SQLException;
+import java.util.Random;
 import java.util.Scanner;
 public class AddressService {
     private AddressRepositoryService dbService;
@@ -87,7 +88,11 @@ public class AddressService {
         String street = scanner.nextLine();
         System.out.println("Enter number: ");
         String number = scanner.nextLine();
-        return new Address(street, city, country, number);
+        Random random = new Random();
+        int randomNumber = random.nextInt(10000); // Generates a random number between 0 and 999
+        Address address = new Address(street, city, country, number);
+        address.setId(randomNumber);
+        return address;
     }
 
     /// for testing

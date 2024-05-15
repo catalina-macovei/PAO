@@ -1,6 +1,8 @@
 package service;
 
+import daoservices.AddressRepositoryService;
 import daoservices.PropertyRepositoryService;
+import daoservices.UserRepositoryService;
 import model.*;
 
 import java.sql.SQLException;
@@ -12,11 +14,15 @@ import static utils.Constants.*;
 
 public class PropertyService {
     private PropertyRepositoryService dbService;
+    private AddressRepositoryService addressRepository;
     private AddressService addressService;
+    private static UserRepositoryService userService;
 
     public PropertyService() throws SQLException {
         this.dbService = new PropertyRepositoryService();
         this.addressService = new AddressService();
+        this.userService = new UserRepositoryService();
+        this.addressRepository = new AddressRepositoryService();
     }
 
     public void create(Scanner scanner, Landlord landlord) throws SQLException {
@@ -24,6 +30,7 @@ public class PropertyService {
         String typeOfProperty = scanner.nextLine().toLowerCase();
 
         if (!typeOfPropertyValidation(typeOfProperty)) { return; }
+        System.out.println("landlord " + landlord);
         propertyInit(scanner, typeOfProperty, landlord);
     }
 
@@ -57,9 +64,11 @@ public class PropertyService {
 
             if (typeOfProperty.equals(HOUSE)) {
                 houseInit(scanner, (House) property);
+
             } else {
                 apartmentInit(scanner, (Apartment) property);
             }
+            dbService.updateProperty(property);
         }
     }
 
@@ -82,6 +91,7 @@ public class PropertyService {
         double price = scanner.nextDouble();
         Property property = new Property(price, name, landlord); // Landlord not provided in the example
 
+        System.out.println("landlord: " + property.getLandlord().getId());
         if (typeOfProperty.equals(HOUSE)) {
             House house = new House(property);
             houseInit(scanner, house);
@@ -93,6 +103,8 @@ public class PropertyService {
         }
         Address address = addressService.create(scanner);
         property.setAddress(address);
+        System.out.println("address id: "+ address.getId());
+
         dbService.addProperty(property);
     }
 
@@ -113,7 +125,7 @@ public class PropertyService {
         double ys = scanner.nextDouble();
         house.setYardsize(ys);
 
-        dbService.updateProperty((Property) house);
+
     }
 
     public void viewPropertyList(Scanner scanner) throws SQLException {
@@ -189,8 +201,10 @@ public class PropertyService {
                     case 1:
                         // Creating a new property
                         System.out.println("Enter landlord details:");
-                        // Assuming landlord creation logic, you need to replace it with actual logic
-                        Landlord landlord = new Landlord();
+                        System.out.println("name");
+                        String name = scanner.nextLine();
+                        Landlord landlord = (Landlord)userService.getUser("landlord", name);
+                        System.out.println(landlord);
                         propertyService.create(scanner, landlord);
                         break;
                     case 2:
