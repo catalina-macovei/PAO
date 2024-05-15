@@ -3,6 +3,7 @@ package model;
 public class Apartment extends Property{
     private int floorNr;
 
+    public Apartment() {}
     public Apartment(Property property) {
         super(property.getPrice(), property.getName(), property.getLandlord());
         property.getLandlord().addProperty(this);

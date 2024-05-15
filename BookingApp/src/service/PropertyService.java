@@ -37,7 +37,7 @@ public class PropertyService {
     public void read(Scanner scanner) throws SQLException {
         System.out.println("Enter property name:");
         String name = scanner.nextLine();
-        dbService.getApartmentByName(name);
+        System.out.println(dbService.getApartmentByName(name));
         //or
         System.out.println(dbService.getHouseByName(name));
     }
@@ -64,7 +64,6 @@ public class PropertyService {
 
             if (typeOfProperty.equals(HOUSE)) {
                 houseInit(scanner, (House) property);
-
             } else {
                 apartmentInit(scanner, (Apartment) property);
             }
@@ -124,8 +123,6 @@ public class PropertyService {
         System.out.println("House yardSize: ");
         double ys = scanner.nextDouble();
         house.setYardsize(ys);
-
-
     }
 
     public void viewPropertyList(Scanner scanner) throws SQLException {

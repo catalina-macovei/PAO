@@ -21,7 +21,7 @@ public class PropertyRepositoryService {
         this.apartmentDao = new ApartmentDao();
     }
 
-    public Apartment getApartmentByName(String name) {
+    public Apartment getApartmentByName(String name) throws SQLException {
         Apartment apartment = apartmentDao.read(name);
         return apartment;
     }
@@ -47,7 +47,7 @@ public class PropertyRepositoryService {
     public void addProperty(Property property) throws SQLException {
         if (property != null) {
             switch (property.getClass().getSimpleName()) {
-                case "Apartment" -> apartmentDao.create((Apartment) property);
+                case "Apartment" -> apartmentDao.add((Apartment) property);
                 case "House" -> houseDao.add((House) property);
                 default ->
                         throw new IllegalArgumentException("Unsupported property type: " + property.getClass().getSimpleName());
@@ -59,10 +59,9 @@ public class PropertyRepositoryService {
         if (property != null) {
             System.out.println("update casa");
             switch (property.getClass().getSimpleName()) {
-                //case "Apartment" -> apartmentDao.update((Apartment) property);
+                case "Apartment" -> apartmentDao.update((Apartment) property);
                 case "House" -> houseDao.update((House) property);
-                default ->
-                        throw new IllegalArgumentException("Unsupported property type: " + property.getClass().getSimpleName());
+                default -> System.out.println("Property unavailable!");
             }
         }
     }
@@ -94,7 +93,7 @@ public class PropertyRepositoryService {
         return properties;
     }
 
-    public List<Property> getAllApartments() {
+    public List<Property> getAllApartments() throws SQLException {
         return apartmentDao.readAll();
     }
     public List<Property> getAllHouses() throws SQLException {
