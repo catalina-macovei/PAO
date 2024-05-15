@@ -24,6 +24,10 @@ public class Customer extends User{
         bookings.add(b);
     }
 
+    public void setBookings(List<Booking> bookings) {
+        this.bookings = bookings;
+    }
+
     @Override
     public String toString() {
         return "Customer{" +

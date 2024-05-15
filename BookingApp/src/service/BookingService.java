@@ -10,24 +10,25 @@ import java.time.LocalDate;
 import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.util.List;
 import java.util.Random;
 import java.util.Scanner;
+import java.util.SortedMap;
 
 public class BookingService {
     private BookingRepositoryService dbService;
     private PropertyRepositoryService propertyService;
     private PaymentService paymentService;
     private AccountBalanceRepositoryService acountBalanceService;
-    private static UserService userService;
 
-    public BookingService(BookingRepositoryService dbService, PropertyRepositoryService propertyService,
-                          PaymentService paymentService, AccountBalanceRepositoryService accountBalanceService, UserService userService) {
-        this.dbService = dbService;
-        this.propertyService = propertyService;
-        this.paymentService = paymentService;
-        this.acountBalanceService = accountBalanceService;
-        this.userService = userService;
+    public BookingService() throws SQLException {
+        // Initialize the dependencies within the constructor
+        this.dbService = new BookingRepositoryService();
+        this.propertyService = new PropertyRepositoryService();
+        this.paymentService = new PaymentService();
+        this.acountBalanceService = new AccountBalanceRepositoryService();
     }
+
 
     // for create booking we must have a customer first
     public void create(Scanner scanner, Customer customer) throws SQLException {
@@ -73,9 +74,11 @@ public class BookingService {
             LocalDate endDate = readDate(scanner);
             Property property = booking.getProperty();
             double totalBookingAmount = totalAmountBooking(startDate, endDate, property.getPrice());
-            Payment payment = paymentService.create(scanner, totalBookingAmount);
-
+            Payment payment = booking.getPayment();
+            paymentService.update(scanner, payment, totalBookingAmount);
+            System.out.println("check payment success: ");
             if (payment.getStatus().equals("success")) {
+                System.out.println("now updating booking...");
                 booking.setStartDate(startDate);
                 booking.setEndDate(endDate);
                 updateAccountBalanceOnBooking(scanner, booking);
@@ -84,6 +87,10 @@ public class BookingService {
         } else {
             System.out.println("Couldn't update booking!");
         }
+    }
+
+    public List<Booking> getBookingsForCustomer(String name) throws SQLException {
+        return (List<Booking>) dbService.getBookingsForCustomer(name);
     }
 
     private void updateAccountBalanceOnBooking(Scanner scanner, Booking booking) throws SQLException {  // the update is for landlord
@@ -180,54 +187,5 @@ public class BookingService {
         return totalAmount;
     }
 
-    public static void main(String[] args) {
-        try {
-            BookingRepositoryService dbService = new BookingRepositoryService();
-            PropertyRepositoryService propertyService = new PropertyRepositoryService();
-            PaymentService paymentService = new PaymentService();
-            AccountBalanceRepositoryService accountBalanceService = new AccountBalanceRepositoryService();
-            UserService userService = new UserService();
-
-            BookingService bookingService = new BookingService(dbService, propertyService, paymentService, accountBalanceService, userService);
-            Scanner scanner = new Scanner(System.in);
-
-            while (true) {
-                System.out.println("Booking Service Menu:");
-                System.out.println("1. Create Booking");
-                System.out.println("2. Read Booking");
-                System.out.println("3. Update Booking");
-                System.out.println("4. Delete Booking");
-                System.out.println("5. Exit");
-                System.out.print("Choose an option: ");
-                int choice = scanner.nextInt();
-                scanner.nextLine(); // Consume newline
-
-                switch (choice) {
-                    case 1:
-                        // Mock customer for demonstration purposes
-                        Customer customer = (Customer) userService.read(scanner);
-                        bookingService.create(scanner, customer);
-                        break;
-                    case 2:
-                        bookingService.read(scanner);
-                        break;
-                    case 3:
-                        bookingService.update(scanner);
-                        break;
-                    case 4:
-                        bookingService.delete(scanner);
-                        break;
-                    case 5:
-                        System.out.println("Exiting...");
-                        scanner.close();
-                        return;
-                    default:
-                        System.out.println("Invalid option. Please try again.");
-                }
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
 
 }

@@ -1,6 +1,6 @@
 package dao;
 import daoservices.DatabaseConnection;
-import model.AccountBalance;
+import model.*;
 import model.AccountBalance;
 import model.AccountBalance;
 import model.AccountBalance;
@@ -79,6 +79,32 @@ public class AccountBalanceDao implements DaoInterface<AccountBalance>{
             preparedStatement.setInt(2, acc.getAccountNr());
 
             preparedStatement.executeUpdate();
+        }
+    }
+
+    public int getAccountId(User user) throws SQLException {
+        if (user == null) {
+            throw new IllegalArgumentException("User cannot be null");
+        }
+
+        String query = null;
+        if (user instanceof Customer) {
+            query = "SELECT accountNr FROM customer WHERE id = ?";
+        } else if (user instanceof Landlord) {
+            query = "SELECT accountNr FROM landlord WHERE id = ?";
+        } else {
+            throw new IllegalStateException("Unknown user type: " + user.getClass().getSimpleName());
+        }
+
+        try (PreparedStatement stmt = connection.prepareStatement(query)) {
+            stmt.setInt(1, user.getId());
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt("accountNr");
+                } else {
+                    throw new IllegalStateException("Account number not found for user ID: " + user.getId());
+                }
+            }
         }
     }
 

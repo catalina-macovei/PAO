@@ -2,8 +2,10 @@ package daoservices;
 
 import dao.BookingDao;
 import model.Booking;
+import model.Customer;
 
 import java.sql.SQLException;
+import java.util.List;
 
 public class BookingRepositoryService {
     private BookingDao bookingDao;
@@ -18,6 +20,10 @@ public class BookingRepositoryService {
             System.out.println("Booking with registration number " + nr + " not found.");
         }
         return booking;
+    }
+
+    public List<Booking> getBookingsForCustomer(String name) throws SQLException {
+        return bookingDao.getBookingsForCustomer(name);
     }
 
     public void addBooking(Booking booking) throws SQLException {

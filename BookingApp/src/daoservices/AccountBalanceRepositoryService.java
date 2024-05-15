@@ -2,6 +2,7 @@ package daoservices;
 
 import dao.AccountBalanceDao;
 import model.AccountBalance;
+import model.User;
 
 import java.sql.SQLException;
 
@@ -30,5 +31,9 @@ public class AccountBalanceRepositoryService {
         if (acc != null) {
             accountBalanceDao.update(acc);
         }
+    }
+
+    public int getAccountId(User user) throws SQLException {
+        return accountBalanceDao.getAccountId(user);
     }
 }

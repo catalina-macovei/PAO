@@ -50,6 +50,7 @@ public class ApartmentDao implements DaoInterface<Apartment> {
                 apartment.setFloorNr(floorNr);
                 apartment.setLandlord(landlord);
                 apartment.setAddress(address);
+                apartment.setId(id);
                 //Add the Apartment object to the list
                 apartments.add((Property) apartment);
             }
@@ -82,7 +83,7 @@ public class ApartmentDao implements DaoInterface<Apartment> {
                 apartment.setFloorNr(floorNr);
                 apartment.setLandlord(landlord);
                 apartment.setAddress(address);
-
+                apartment.setId(id);
                 return apartment;
             }
         } finally {
@@ -118,6 +119,7 @@ public class ApartmentDao implements DaoInterface<Apartment> {
                 apartment.setFloorNr(floorNr);
                 apartment.setLandlord(landlord);
                 apartment.setAddress(address);
+                apartment.setId(id);
 
                 return apartment;
             }

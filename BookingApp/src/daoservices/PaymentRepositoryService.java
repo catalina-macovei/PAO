@@ -25,4 +25,7 @@ public class PaymentRepositoryService {
         paymentDao.delete(payment);
         System.out.println("Removed Payment: " + payment);
     }
+    public void updatePayment(Payment payment) throws SQLException {
+        paymentDao.update(payment);
+    }
 }

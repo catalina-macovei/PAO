@@ -130,13 +130,13 @@ public class BookingDao implements DaoInterface<Booking> {
 
     @Override
     public void update(Booking h) throws SQLException {
-        String sql = "UPDATE booking.booking set payment = ? , start_date = ? , end_date = ? where id = ?";
+        String sql = "UPDATE booking.booking set start_date = ? , end_date = ? where id = ?";
 
         try(PreparedStatement preparedStatement = connection.prepareStatement(sql);) {
-            preparedStatement.setInt(1, h.getPayment().getId());
-            preparedStatement.setDate(2, valueOf(h.getStartDate()));
-            preparedStatement.setDate(3, valueOf(h.getEndDate()));
-            preparedStatement.setInt(4, h.getRegistrationNr());
+            preparedStatement.setDate(1, valueOf(h.getStartDate()));
+            preparedStatement.setDate(2, valueOf(h.getEndDate()));
+            preparedStatement.setInt(3, h.getRegistrationNr());
+            System.out.println("booking updated!");
             preparedStatement.executeUpdate();
         }
     }
@@ -184,6 +184,49 @@ public class BookingDao implements DaoInterface<Booking> {
                 }
             }
         }
+    }
+
+    public List<Booking> getBookingsForCustomer(String name) throws SQLException {
+        List<Booking> bookings = new ArrayList<>();
+        int customerId = customerDao.read(name).getId();
+
+        String sql = "SELECT * FROM booking.booking WHERE id = ?";
+
+        try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            preparedStatement.setInt(1, customerId);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            while (resultSet.next()) {
+                int id = resultSet.getInt("id");
+                int customerFK = resultSet.getInt("customer");
+                int houseFK = resultSet.getInt("house");
+                int apartmentFK = resultSet.getInt("apartment");
+                int paymentFK = resultSet.getInt("payment");
+                LocalDate startDate = resultSet.getDate("start_date").toLocalDate();
+                LocalDate endDate = resultSet.getDate("end_date").toLocalDate();
+
+                Customer customer = customerDao.readById(customerFK);
+                Payment payment = paymentDao.read(String.valueOf(paymentFK));
+                // Determine whether to use house or apartment
+                Property property = null;
+                if (houseFK != 0) {
+                    property = houseDao.readById(houseFK);
+                } else if (apartmentFK != 0) {
+                    property = apartmentDao.readById(apartmentFK);
+                }
+                Booking booking = new Booking();
+                booking.setRegistrationNr(id);
+                booking.setCustomer(customer);
+                booking.setProperty(property);
+                booking.setPayment(payment);
+                booking.setStartDate(startDate);
+                booking.setEndDate(endDate);
+                bookings.add(booking);
+            }
+        }
+        catch (SQLException e) {
+            System.out.println("Couldn't fetch customer bookings!");
+        }
+        return bookings;
     }
 
 }

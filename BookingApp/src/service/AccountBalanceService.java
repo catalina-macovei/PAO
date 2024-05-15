@@ -51,13 +51,14 @@ public class AccountBalanceService {
 
     public void manageAccountBalance(Scanner scanner, User user) throws SQLException {
         AccountBalance accountBalance = user.getAccountBalance();
+        System.out.println("user=="+user + "  account="+accountBalance + " id=" +accountBalance.getAccountNr());
         if (accountBalance == null) {
             // If accountBalance is null, create a new AccountBalance for the user
             create(scanner, user);
             accountBalance = user.getAccountBalance();
         }
         //now accountBalance should not be null
-        update(scanner, accountBalance.getAccountNr());
+        update(scanner, dbService.getAccountId(user));
     }
     private void deposit(AccountBalance accountBalance, Scanner scanner) throws SQLException {
         System.out.println("Amount to deposit: ");

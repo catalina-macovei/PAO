@@ -16,7 +16,7 @@ public class UserService {
     public UserService() throws SQLException {
         this.dbService = new UserRepositoryService();
         this.propertyService = new PropertyService(); // Initialize PropertyService
-        //this.bookingService = new BookingService();
+        this.bookingService = new BookingService();
         this.accountBalanceService = new AccountBalanceService();
     }
 
@@ -206,8 +206,8 @@ public class UserService {
             System.out.println("User not found.");
             return;
         }
-
-        List<Booking> bookings = user.getBookings();
+        List<Booking> bookings = bookingService.getBookingsForCustomer(name);
+        user.setBookings(bookings);
         if (bookings.isEmpty()) {
             System.out.println("No bookings found for " + user.getName());
             return;
@@ -291,8 +291,6 @@ public class UserService {
         try {
             UserService userService = new UserService();
             Scanner scanner = new Scanner(System.in);
-
-            userService.viewUsers(scanner);
             scanner.close();
         } catch (SQLException e) {
             e.printStackTrace();

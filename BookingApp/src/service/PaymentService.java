@@ -31,16 +31,29 @@ public class PaymentService {
         dbService.removePayment(p);
     }
 
-    public void update(Scanner scanner) throws SQLException {
-        System.out.println("Enter payment ID to update:");
-        int id = scanner.nextInt();
-        Payment existingPayment = dbService.getPaymentById(id);
+    public void update(Scanner scanner, Payment existingPayment, double amount) throws SQLException {
+        System.out.println("You have to pay " + amount);
+
         if (existingPayment != null) {
-            System.out.println("Enter new payment amount:");
-            double amount = scanner.nextDouble();
-            existingPayment.setAmount(amount);
+            double amountPaid;
+            boolean isValidAmount = false;
+
+            do {
+                System.out.println("Enter amount:");
+                amountPaid = scanner.nextDouble();
+
+                if (amountPaid >= amount) {
+                    isValidAmount = true;
+                } else {
+                    System.out.println("Invalid amount. Please enter an amount greater than or equal to " + amount);
+                }
+            } while (!isValidAmount);
+
+            existingPayment.setAmount(amountPaid);
+            dbService.updatePayment(existingPayment);
         }
     }
+
     private Payment processBookingPayment(Scanner scanner, double totalBookingAmount) throws SQLException {
         System.out.println("You have to pay: " + totalBookingAmount + "\nIntroduce the sum:");
         double amount = scanner.nextDouble();
@@ -57,36 +70,5 @@ public class PaymentService {
             System.out.println("Payment failed!");
         }
         return payment;
-    }
-
-    public static void main(String[] args) {
-        try {
-            PaymentService paymentService = new PaymentService();
-            Scanner scanner = new Scanner(System.in);
-
-            // Test create
-            System.out.println("Testing create operation...");
-            System.out.println("Enter requested booking payment:");
-            double requestedBookingPayment = scanner.nextDouble();
-            Payment createdPayment = paymentService.create(scanner, requestedBookingPayment);
-            System.out.println("Payment created: " + createdPayment);
-
-            // Test read
-            System.out.println("Testing read operation...");
-            paymentService.read(scanner);
-
-            // Test update
-            System.out.println("Testing update operation...");
-            paymentService.update(scanner);
-
-            // Test delete
-            System.out.println("Testing delete operation...");
-            paymentService.delete(scanner);
-
-            // Close the scanner to prevent resource leak
-            scanner.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
     }
 }

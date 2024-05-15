@@ -21,9 +21,9 @@ INSERT INTO address (country, city, street, number) VALUES ('Italy', 'Rome', 'Vi
 INSERT INTO address (country, city, street, number) VALUES ('Spain', 'Barcelona', 'Passeig de Gràcia', 123);
 INSERT INTO address (country, city, street, number) VALUES ('Japan', 'Tokyo', 'Shibuya', 1);
 
-INSERT INTO payment (amount, status) VALUES (10000.75, 'Paid');
-INSERT INTO payment (amount, status) VALUES (30000.25, 'Paid');
-INSERT INTO payment (amount, status) VALUES (40000.00, 'Paid');
+INSERT INTO payment (amount, status) VALUES (10000.75, 'success');
+INSERT INTO payment (amount, status) VALUES (30000.25, 'success');
+INSERT INTO payment (amount, status) VALUES (40000.00, 'success');
 
 INSERT INTO house (name, address, landlord, price, yardSize) VALUES ("house 1",1, 1, 3000.00, 500.00);
 INSERT INTO house (name, address, landlord, price, yardSize) VALUES ("house 2",2, 2, 2000.00, 750.00);

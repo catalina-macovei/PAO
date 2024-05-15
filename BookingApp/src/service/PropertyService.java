@@ -16,12 +16,11 @@ public class PropertyService {
     private PropertyRepositoryService dbService;
     private AddressRepositoryService addressRepository;
     private AddressService addressService;
-    private static UserRepositoryService userService;
+
 
     public PropertyService() throws SQLException {
         this.dbService = new PropertyRepositoryService();
         this.addressService = new AddressService();
-        this.userService = new UserRepositoryService();
         this.addressRepository = new AddressRepositoryService();
     }
 
@@ -177,61 +176,4 @@ public class PropertyService {
         }
     }
 
-    public static void main(String[] args) {
-        Scanner scanner = new Scanner(System.in);
-        try {
-            PropertyService propertyService = new PropertyService();
-
-            while (true) {
-                System.out.println("\nChoose an option:");
-                System.out.println("1. Create Property");
-                System.out.println("2. Read Property");
-                System.out.println("3. Update Property");
-                System.out.println("4. Delete Property");
-                System.out.println("5. View Property List");
-                System.out.println("6. Exit");
-
-                int choice = scanner.nextInt();
-                scanner.nextLine();  // Consume newline
-
-                switch (choice) {
-                    case 1:
-                        // Creating a new property
-                        System.out.println("Enter landlord details:");
-                        System.out.println("name");
-                        String name = scanner.nextLine();
-                        Landlord landlord = (Landlord)userService.getUser("landlord", name);
-                        System.out.println(landlord);
-                        propertyService.create(scanner, landlord);
-                        break;
-                    case 2:
-                        // Reading a property
-                        propertyService.read(scanner);
-                        break;
-                    case 3:
-                        // Updating a property
-                        propertyService.update(scanner);
-                        break;
-                    case 4:
-                        // Deleting a property
-                        propertyService.delete(scanner);
-                        break;
-                    case 5:
-                        // Viewing property list
-                        propertyService.viewPropertyList(scanner);
-                        break;
-                    case 6:
-                        // Exiting the application
-                        System.out.println("Exiting...");
-                        scanner.close();
-                        System.exit(0);
-                        break;
-                    default:
-                        System.out.println("Invalid option! Please try again.");
-                }
-            }
-        } catch (SQLException e) {
-            System.err.println("Database error: " + e.getMessage());
-        }
-    }
 }
