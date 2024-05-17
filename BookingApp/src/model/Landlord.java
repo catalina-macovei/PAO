@@ -31,10 +31,7 @@ public class Landlord extends User{
     @Override
     public String toString() {
         return "Landlord{" +
-                "name='" + getName() + '\'' +
-                ", accountBalance=" + (getAccountBalance() != null ? getAccountBalance() : 0) +
-                ", propertiesNr=" + getProperties().size() +
-                '}';
+                "name='" + getName() + '}';
     }
 
 }

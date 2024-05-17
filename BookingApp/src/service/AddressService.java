@@ -1,10 +1,14 @@
 package service;
 import daoservices.AddressRepositoryService;
 import model.*;
+import utils.FileManagement;
 
 import java.sql.SQLException;
 import java.util.Random;
 import java.util.Scanner;
+
+import static utils.Constants.AUDIT_FILE;
+
 public class AddressService {
     private AddressRepositoryService dbService;
 
@@ -17,6 +21,7 @@ public class AddressService {
 
         try {
             dbService.addAddress(address);
+            FileManagement.scriereFisierChar(AUDIT_FILE, "created address: " + address);
         } catch (SQLException e) {
             System.err.println("Error occurred while adding the address! " );
         }
@@ -30,6 +35,7 @@ public class AddressService {
 
         try {
             Address ad = dbService.getAddressById(addrid);
+            FileManagement.scriereFisierChar(AUDIT_FILE, "read address: " + ad);
             System.out.println(ad);
         } catch (SQLException e) {
             System.err.println("Error occurred while reading the address!");
@@ -37,14 +43,13 @@ public class AddressService {
     }
 
 
-    public void delete(Scanner scanner) {
-        System.out.println("Address id:");
-        int addrid = scanner.nextInt();
+    public void delete(Scanner scanner, int addrid) {
 
         try {
             Address addressToDelete = dbService.getAddressById(addrid);
             if (addressToDelete != null) {
                 dbService.deleteAddress(addressToDelete);
+                FileManagement.scriereFisierChar(AUDIT_FILE, "deleted address: " + addressToDelete);
                 //System.out.println("Address deleted.");
             } else {
                 System.out.println("Address not found.");
@@ -55,12 +60,10 @@ public class AddressService {
     }
 
 
-    public void update(Scanner scanner) {
-        System.out.println("Address id: ");
-        int addrid = scanner.nextInt();
-
+    public void update(Scanner scanner, int addrid) {
         try {
             Address address = dbService.getAddressById(addrid);
+            FileManagement.scriereFisierChar(AUDIT_FILE, "read address: " + address);
             if (address == null) {
                 return;
             }
@@ -69,8 +72,9 @@ public class AddressService {
             address.setCity(addressGeneralInfo.getCity());
             address.setStreet(addressGeneralInfo.getStreet());
             address.setNumber(addressGeneralInfo.getNumber());
-
+            System.out.println("address id: " + address.getId());
             dbService.update(address);
+            FileManagement.scriereFisierChar(AUDIT_FILE, "update address: " + address);
             System.out.println("Address updated.");
         } catch (SQLException e) {
             System.err.println("Error occurred while updating the address");
@@ -95,35 +99,4 @@ public class AddressService {
         return address;
     }
 
-    /// for testing
-    public static void main(String[] args) {
-        try {
-            AddressService addressService = new AddressService();
-            Scanner scanner = new Scanner(System.in);
-
-            // Create a new address
-            System.out.println("Creating a new address...");
-            Address newAddress = addressService.create(scanner);
-            System.out.println("New address created: " + newAddress);
-
-            // Update the created address
-            System.out.println("Updating the address...");
-            addressService.update(scanner);
-            System.out.println("Address updated: " + newAddress);
-
-            // Read an address by id
-            System.out.println("Reading an address by id...");
-            addressService.read(scanner);
-
-            // Delete the created address
-            System.out.println("Deleting the address...");
-            addressService.delete(scanner);
-            System.out.println("Address deleted.");
-
-            // Close the scanner to prevent resource leak
-            scanner.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
 }

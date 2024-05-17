@@ -57,7 +57,6 @@ public class PropertyRepositoryService {
 
     public void updateProperty(Property property) throws SQLException {
         if (property != null) {
-            System.out.println("update casa");
             switch (property.getClass().getSimpleName()) {
                 case "Apartment" -> apartmentDao.update((Apartment) property);
                 case "House" -> houseDao.update((House) property);

@@ -2,6 +2,7 @@ package service;
 import daoservices.UserRepositoryService;
 import model.*;
 import service.*;
+import utils.FileManagement;
 
 import java.sql.SQLException;
 import java.util.*;
@@ -38,9 +39,11 @@ public class UserService {
             if (user == null) {
                 user = dbService.getLandlordByName(name);
             }
+            FileManagement.scriereFisierChar(AUDIT_FILE, "read user: " + name);
         } catch (SQLException e) {
             System.err.println("An error occurred while reading user: " + e.getMessage());
         }
+        System.out.println("read user: " + user);
         return user;
     }
 
@@ -56,6 +59,7 @@ public class UserService {
         }
         try {
             dbService.removeUser(typeOfUser, name);
+            FileManagement.scriereFisierChar(AUDIT_FILE, "removed user: " + name);
             System.out.println("User successfully deleted.");
         } catch (SQLException e) {
             System.err.println("An error occurred while attempting to delete the user: " + e.getMessage());
@@ -87,6 +91,7 @@ public class UserService {
         user.setPassword(userGeneralInfo.getPassword());
         try {
             dbService.updateUser(user);
+            FileManagement.scriereFisierChar(AUDIT_FILE, "updated user: " + name);
             System.out.println("User successfully updated.");
         } catch (SQLException e) {
             System.err.println("An error occurred while updating the user: " + e.getMessage());
@@ -133,7 +138,8 @@ public class UserService {
         }
 
        try {
-            dbService.addUser(user);
+           dbService.addUser(user);
+           FileManagement.scriereFisierChar(AUDIT_FILE, "created user: " + name);
         } catch (SQLException e) {
             System.out.println("Could not add the user!");
         }
@@ -157,9 +163,11 @@ public class UserService {
             switch (choice) {
                 case 1:
                     readAllLandlords(dbService.getAllLandlords());
+                    FileManagement.scriereFisierChar(AUDIT_FILE, "read all landlords");
                     break;
                 case 2:
                     readAllCustomers(dbService.getAllCustomers());
+                    FileManagement.scriereFisierChar(AUDIT_FILE, "read all customers" );
                     break;
                 default:
                     System.out.println("Invalid option selected.");

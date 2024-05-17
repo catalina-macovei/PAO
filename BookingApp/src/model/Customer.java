@@ -31,9 +31,7 @@ public class Customer extends User{
     @Override
     public String toString() {
         return "Customer{" +
-                "name='" + getName() + '\'' +
-                ", accountBalance=" + (getAccountBalance() != null ? getAccountBalance() : 0) +
-                ", bookingsNr=" + getBookings().size() +
+                "name='" + getName() +
                 '}';
     }
 

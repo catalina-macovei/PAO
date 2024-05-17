@@ -5,10 +5,12 @@ import model.Customer;
 import model.Landlord;
 import dao.CustomerDao;
 import dao.LandlordDao;
+import utils.FileManagement;
 
 import java.sql.SQLException;
 import java.util.List;
 
+import static utils.Constants.AUDIT_FILE;
 import static utils.Constants.LANDLORD;
 
 public class UserRepositoryService {
@@ -67,15 +69,13 @@ public class UserRepositoryService {
     }
 
     public User getUser(String typeOfUser, String name) throws SQLException {
-        System.out.println("before comparing");
         User user;
         if (typeOfUser.equals(LANDLORD)) {
             user = getLandlordByName(name);
-            System.out.println("User "+ name);
-            System.out.println(user);
         } else {
             user = getCustomerByName(name);
         }
+        FileManagement.scriereFisierChar(AUDIT_FILE, "created account balance for user: " + name);
         return user;
     }
 

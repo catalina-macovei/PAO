@@ -2,10 +2,14 @@ package service;
 
 import daoservices.PaymentRepositoryService;
 import model.*;
+import utils.FileManagement;
 
 import java.sql.SQLException;
 import java.util.Random;
 import java.util.Scanner;
+
+import static utils.Constants.AUDIT_FILE;
+
 public class PaymentService {
     private PaymentRepositoryService dbService;
     public PaymentService () throws SQLException { this.dbService = new PaymentRepositoryService(); }
@@ -15,13 +19,15 @@ public class PaymentService {
         payment.setStatus("success");
         System.out.println("payment amount="+payment+" id="+payment.getId());
         dbService.addPayment(payment);
+        FileManagement.scriereFisierChar(AUDIT_FILE, "created payment: " + payment);
         return payment;
     }
 
     public void read(Scanner scanner) throws SQLException {
         System.out.println("Enter payment ID:");
         int id = scanner.nextInt();
-        dbService.getPaymentById(id);
+        Payment payment = dbService.getPaymentById(id);
+        FileManagement.scriereFisierChar(AUDIT_FILE, "read payment: " + payment);
     }
 
     public void delete(Scanner scanner) throws SQLException {
@@ -29,6 +35,7 @@ public class PaymentService {
         int id = scanner.nextInt();
         Payment p = dbService.getPaymentById(id);
         dbService.removePayment(p);
+        FileManagement.scriereFisierChar(AUDIT_FILE, "remove payment: " + p);
     }
 
     public void update(Scanner scanner, Payment existingPayment, double amount) throws SQLException {
@@ -51,6 +58,7 @@ public class PaymentService {
 
             existingPayment.setAmount(amountPaid);
             dbService.updatePayment(existingPayment);
+            FileManagement.scriereFisierChar(AUDIT_FILE, "update payment: " + existingPayment);
         }
     }
 

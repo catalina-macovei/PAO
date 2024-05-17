@@ -1,9 +1,13 @@
 package service;
 import daoservices.AccountBalanceRepositoryService;
 import model.*;
+import utils.FileManagement;
 
 import java.sql.SQLException;
 import java.util.Scanner;
+
+import static utils.Constants.AUDIT_FILE;
+
 public class AccountBalanceService {
     private AccountBalanceRepositoryService dbService;
 
@@ -18,20 +22,24 @@ public class AccountBalanceService {
         AccountBalance accountBalance = new AccountBalance(amount);
         user.setAccountBalance(accountBalance);
         dbService.createAccountBalance(accountBalance);
+        FileManagement.scriereFisierChar(AUDIT_FILE, "created account balance for user: " + user.getName() + " amount " + amount);
     }
 
     public void read(Scanner scanner, int accountNumber) throws SQLException {
         AccountBalance accountBalance = dbService.getByAccountNr(accountNumber);
+        FileManagement.scriereFisierChar(AUDIT_FILE, "read account balance: " + accountBalance.getAmount() + " id=" + accountNumber);
         System.out.println(accountBalance);
     }
 
     public void delete(Scanner scanner, int accountNumber) throws SQLException {
         dbService.deleteAccountBalance(dbService.getByAccountNr(accountNumber));
+        FileManagement.scriereFisierChar(AUDIT_FILE, "deleted account balance: " + accountNumber);
     }
 
     public void update(Scanner scanner, int accountNumber) throws SQLException {
 
         AccountBalance existingAccountBalance = dbService.getByAccountNr(accountNumber);
+        FileManagement.scriereFisierChar(AUDIT_FILE, "read account balance id: " + accountNumber + " amount: " + existingAccountBalance.getAmount() );
         if (existingAccountBalance != null) {
             System.out.println("Options update: 1 - DEPOSIT || 2 - WITHDRAW");
             int option = scanner.nextInt();
@@ -66,6 +74,7 @@ public class AccountBalanceService {
         double currAmount = accountBalance.getAmount();
         accountBalance.setAmount(currAmount + amount);
         dbService.update(accountBalance);
+        FileManagement.scriereFisierChar(AUDIT_FILE, "update: deposit into account balance id=" + accountBalance.getAccountNr() +" ->current amount: " + accountBalance.getAmount());
         System.out.println("Deposit successful.");
     }
 
@@ -76,6 +85,7 @@ public class AccountBalanceService {
         if (currAmount >= amount) {
             accountBalance.setAmount(currAmount - amount);
             dbService.update(accountBalance);
+            FileManagement.scriereFisierChar(AUDIT_FILE, "update: widraw from account balance id=" + accountBalance.getAccountNr() +" ->current amount: " + accountBalance.getAmount());
             System.out.println("Withdrawal successful.");
         } else {
             System.out.println("Insufficient funds!");

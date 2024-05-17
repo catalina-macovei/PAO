@@ -4,6 +4,7 @@ import daoservices.AccountBalanceRepositoryService;
 import daoservices.BookingRepositoryService;
 import daoservices.PropertyRepositoryService;
 import model.*;
+import utils.FileManagement;
 
 import java.sql.SQLException;
 import java.time.LocalDate;
@@ -14,6 +15,8 @@ import java.util.List;
 import java.util.Random;
 import java.util.Scanner;
 import java.util.SortedMap;
+
+import static utils.Constants.AUDIT_FILE;
 
 public class BookingService {
     private BookingRepositoryService dbService;
@@ -34,12 +37,14 @@ public class BookingService {
     public void create(Scanner scanner, Customer customer) throws SQLException {
         Booking booking = setGeneralInfo(scanner, customer);
         dbService.addBooking(booking);
+        FileManagement.scriereFisierChar(AUDIT_FILE, "created booking for customer: " + customer.getName() + " bookingRegNr="+booking.getRegistrationNr());
     }
 
     public void read(Scanner scanner) throws SQLException {
         System.out.println("Enter registration number of Booking: ");
         int regNr = scanner.nextInt();
         Booking booking = dbService.getByRegistrationNr(regNr);
+        FileManagement.scriereFisierChar(AUDIT_FILE, "read booking: regNr=" + booking.getRegistrationNr());
         System.out.println("Booking: " + booking);
     }
 
@@ -57,6 +62,7 @@ public class BookingService {
             customer.getBookings().remove(booking);
         }
         dbService.removeBooking(booking);
+        FileManagement.scriereFisierChar(AUDIT_FILE, "delete booking: regNr" + booking.getRegistrationNr());
     }
 
     public void update(Scanner scanner) throws SQLException {
@@ -83,6 +89,7 @@ public class BookingService {
                 booking.setEndDate(endDate);
                 updateAccountBalanceOnBooking(scanner, booking);
                 dbService.updateBooking(booking);
+                FileManagement.scriereFisierChar(AUDIT_FILE, "update booking: regNr=" + booking.getRegistrationNr());
             }
         } else {
             System.out.println("Couldn't update booking!");
@@ -90,6 +97,7 @@ public class BookingService {
     }
 
     public List<Booking> getBookingsForCustomer(String name) throws SQLException {
+        FileManagement.scriereFisierChar(AUDIT_FILE, "read all bookings for customer: " + name);
         return (List<Booking>) dbService.getBookingsForCustomer(name);
     }
 

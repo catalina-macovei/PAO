@@ -4,6 +4,7 @@ import daoservices.AddressRepositoryService;
 import daoservices.PropertyRepositoryService;
 import daoservices.UserRepositoryService;
 import model.*;
+import utils.FileManagement;
 
 import java.sql.SQLException;
 import java.util.Comparator;
@@ -29,17 +30,26 @@ public class PropertyService {
         String typeOfProperty = scanner.nextLine().toLowerCase();
 
         if (!typeOfPropertyValidation(typeOfProperty)) { return; }
-        System.out.println("landlord " + landlord);
         propertyInit(scanner, typeOfProperty, landlord);
     }
 
     public void read(Scanner scanner) throws SQLException {
         System.out.println("Enter property name:");
         String name = scanner.nextLine();
-        System.out.println(dbService.getApartmentByName(name));
-        //or
-        System.out.println(dbService.getHouseByName(name));
+        Apartment apartment = dbService.getApartmentByName(name);
+        House house = dbService.getHouseByName(name);
+
+        if (apartment != null) {
+            System.out.println(apartment);
+            FileManagement.scriereFisierChar(AUDIT_FILE, "read apartment: " + name);
+        }
+
+        if (house != null) {
+            System.out.println(house);
+            FileManagement.scriereFisierChar(AUDIT_FILE, "read house: " + name);
+        }
     }
+
 
     public void delete(Scanner scanner) throws SQLException {
         System.out.println("Enter property name:");
@@ -47,7 +57,10 @@ public class PropertyService {
         System.out.println("Type of property: ");
         String typeOfProperty = scanner.nextLine().toLowerCase();
         if (!typeOfPropertyValidation(typeOfProperty)) { return; }
+        Property property = dbService.getProperty(typeOfProperty, name);
         dbService.removeProperty(typeOfProperty, name);
+        FileManagement.scriereFisierChar(AUDIT_FILE, "removed property: " + name);
+        addressService.delete(scanner, property.getAddress().getId());
     }
 
     public void update(Scanner scanner) throws SQLException {
@@ -67,6 +80,8 @@ public class PropertyService {
                 apartmentInit(scanner, (Apartment) property);
             }
             dbService.updateProperty(property);
+            FileManagement.scriereFisierChar(AUDIT_FILE, "updated property: " + name);
+            addressService.update(scanner, property.getAddress().getId());
         }
     }
 
@@ -101,9 +116,8 @@ public class PropertyService {
         }
         Address address = addressService.create(scanner);
         property.setAddress(address);
-        System.out.println("address id: "+ address.getId());
-
         dbService.addProperty(property);
+        FileManagement.scriereFisierChar(AUDIT_FILE, "created property: " + name);
     }
 
     private boolean checkIfExists(String name, String typeOfProperty) throws SQLException {
@@ -131,12 +145,15 @@ public class PropertyService {
         switch(choice) {
             case 1:
                 readAllApartments(dbService.getAllApartments());
+                FileManagement.scriereFisierChar(AUDIT_FILE, "read all apartments");
                 break;
             case 2:
                 readAllHouses(dbService.getAllHouses());
+                FileManagement.scriereFisierChar(AUDIT_FILE, "read all houses");
                 break;
             case 3:
                 readAllProperties(dbService.getAllProperties());
+                FileManagement.scriereFisierChar(AUDIT_FILE, "read all properties");
                 break;
             default:
                 System.out.println("Invalid option selected.");
