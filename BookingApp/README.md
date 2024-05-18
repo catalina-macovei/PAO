@@ -2,18 +2,21 @@
 This app simplifies the process of finding and booking apartments and homes. Whether you're a customer searching for a place to stay or a landlord looking to list your property, this app comes in hand.
 
 ### :bookmark: Application main menu:
-1. User registration
-2. Account management
+1. User registration (create user/account balance)
+2. Account management (update user/account balance)
 3. View users
 4. Delete user
-5. Add property
-6. Update property
-7. Delete property
-8. View properties
-9. Add booking
-10. See my bookings
-11. Delete booking
-12. Update booking
+5. Read user
+6. Create property (automatically create address)
+7. Update property
+8. Delete property
+9. Read property
+10. View properties
+11. Add booking
+12. See my bookings
+13. Delete booking
+14. Update booking
+15. Read booking
 
 ### :bookmark: Classes:
 - User:
@@ -26,6 +29,15 @@ This app simplifies the process of finding and booking apartments and homes. Whe
 - Address
 - Booking
 - Payment
+### :bookmark: CRUD on following classes:
+1. Customer
+2. Landlord
+3. Apartment
+4. House
+5. Account Balance
+6. Address
+7. Booking
+8. Payment
 
 ## Features
 
