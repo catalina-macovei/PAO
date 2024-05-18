@@ -64,13 +64,6 @@ This app simplifies the process of finding and booking apartments and homes. Whe
     - Account Balance will be updated, once a booking was made on landlord's property :heavy_dollar_sign:
     - Update user details      
 
-### :bookmark: Default:
-
-1. **View Menu:** View the available options.
-2. **View Users:** View the list of users, categorized as customers or landlords.
-3. **Delete Account:** Delete user account.
-4. **Create User:** Register as a customer or landlord.
-5. **Log in (Optional):** Log into the created account to manage account details.
 
 ### :bookmark: UML diagram:
 
