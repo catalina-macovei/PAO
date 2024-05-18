@@ -36,16 +36,24 @@ public class BookingService {
     // for create booking we must have a customer first
     public void create(Scanner scanner, Customer customer) throws SQLException {
         Booking booking = setGeneralInfo(scanner, customer);
-        dbService.addBooking(booking);
+        try {
+            dbService.addBooking(booking);
+        } catch (SQLException e) {
+            System.out.println("error creating booking!");
+        }
         FileManagement.scriereFisierChar(AUDIT_FILE, "created booking for customer: " + customer.getName() + " bookingRegNr="+booking.getRegistrationNr());
     }
 
     public void read(Scanner scanner) throws SQLException {
         System.out.println("Enter registration number of Booking: ");
         int regNr = scanner.nextInt();
-        Booking booking = dbService.getByRegistrationNr(regNr);
-        FileManagement.scriereFisierChar(AUDIT_FILE, "read booking: regNr=" + booking.getRegistrationNr());
-        System.out.println("Booking: " + booking);
+        try {
+            Booking booking = dbService.getByRegistrationNr(regNr);
+            FileManagement.scriereFisierChar(AUDIT_FILE, "read booking: regNr=" + booking.getRegistrationNr());
+            System.out.println("Booking: " + booking);
+        } catch (SQLException e ) {
+            System.out.println("Error redaing booking!");
+        }
     }
 
     public void delete(Scanner scanner) throws SQLException {
@@ -61,7 +69,11 @@ public class BookingService {
         if (customer != null) {
             customer.getBookings().remove(booking);
         }
-        dbService.removeBooking(booking);
+        try {
+            dbService.removeBooking(booking);
+        } catch (SQLException e) {
+            System.out.println("error removing booking!");
+        }
         FileManagement.scriereFisierChar(AUDIT_FILE, "delete booking: regNr" + booking.getRegistrationNr());
     }
 
@@ -88,7 +100,11 @@ public class BookingService {
                 booking.setStartDate(startDate);
                 booking.setEndDate(endDate);
                 updateAccountBalanceOnBooking(scanner, booking);
-                dbService.updateBooking(booking);
+                try {
+                    dbService.updateBooking(booking);
+                } catch (SQLException e) {
+                    System.out.println("error updating booking!");
+                }
                 FileManagement.scriereFisierChar(AUDIT_FILE, "update booking: regNr=" + booking.getRegistrationNr());
             }
         } else {

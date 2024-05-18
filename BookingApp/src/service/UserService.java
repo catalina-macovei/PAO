@@ -58,9 +58,12 @@ public class UserService {
             return;
         }
         try {
+            User user = dbService.getUser(typeOfUser, name);
+            int accountNr = user.getAccountBalance().getAccountNr();
             dbService.removeUser(typeOfUser, name);
             FileManagement.scriereFisierChar(AUDIT_FILE, "removed user: " + name);
             System.out.println("User successfully deleted.");
+            accountBalanceService.delete(scanner, accountNr);
         } catch (SQLException e) {
             System.err.println("An error occurred while attempting to delete the user: " + e.getMessage());
         }
@@ -140,7 +143,8 @@ public class UserService {
        try {
            dbService.addUser(user);
            FileManagement.scriereFisierChar(AUDIT_FILE, "created user: " + name);
-        } catch (SQLException e) {
+           FileManagement.scriereFisierChar(AUDIT_FILE, "created account balance -> nr: " + user.getAccountBalance().getAccountNr());
+       } catch (SQLException e) {
             System.out.println("Could not add the user!");
         }
         System.out.println("Created " + user);
@@ -180,9 +184,9 @@ public class UserService {
 
     private static void readAllLandlords(List<Landlord> landlords) {
         if (landlords.size() > 0) {
-            System.out.println("Landlords ranked by properties number: ");
+            System.out.println("Landlords ranked by account balance: ");
             // sorting the list of landlords using a Comparator
-            landlords.sort(Comparator.comparingInt(landlord -> landlord.getProperties().size()));
+            landlords.sort(Comparator.comparingDouble(landlord -> landlord.getAccountBalance().getAmount()));
 
             for (Landlord land : landlords) {
                 System.out.println(land);
@@ -194,9 +198,9 @@ public class UserService {
     private static void readAllCustomers(List<Customer> customers) {
         if (customers.size() > 0)
         {
-            System.out.println("Customers ranked by bookings number: ");
+            System.out.println("Customers ranked by account balance: ");
             // Sorting the list of customers using a Comparator
-            customers.sort(Comparator.comparingInt(customer -> customer.getBookings().size()));
+            customers.sort(Comparator.comparingDouble(customer -> customer.getAccountBalance().getAmount()));
 
             for (Customer cust : customers) {
                 System.out.println(cust);

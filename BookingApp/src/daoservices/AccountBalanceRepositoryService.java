@@ -3,8 +3,11 @@ package daoservices;
 import dao.AccountBalanceDao;
 import model.AccountBalance;
 import model.User;
+import utils.FileManagement;
 
 import java.sql.SQLException;
+
+import static utils.Constants.AUDIT_FILE;
 
 public class AccountBalanceRepositoryService {
     private AccountBalanceDao accountBalanceDao = AccountBalanceDao.getInstance();
@@ -30,6 +33,7 @@ public class AccountBalanceRepositoryService {
     public void update(AccountBalance acc) throws SQLException {
         if (acc != null) {
             accountBalanceDao.update(acc);
+            FileManagement.scriereFisierChar(AUDIT_FILE, "update account balance id=" + acc.getAccountNr() );
         }
     }
 

@@ -190,7 +190,9 @@ public class BookingDao implements DaoInterface<Booking> {
         List<Booking> bookings = new ArrayList<>();
         int customerId = customerDao.read(name).getId();
 
-        String sql = "SELECT * FROM booking.booking WHERE id = ?";
+        String sql = "SELECT customer, id, house, apartment, payment, start_date, end_date " +
+                "FROM booking.booking " +
+                "WHERE customer = ?";
 
         try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             preparedStatement.setInt(1, customerId);

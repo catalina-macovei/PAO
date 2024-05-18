@@ -28,7 +28,9 @@ public class CustomerDao implements DaoInterface<Customer> {
     public List<Customer> readAll() throws SQLException {
         List<Customer> customers = new ArrayList<>();
 
-        String query = "SELECT * FROM customer"; // Assuming 'customer' is the table name
+        String query ="SELECT l.id, l.name, l.password, l.email, a.amount, l.accountNr " +
+                "FROM customer l " +
+                "JOIN account_balance a ON l.accountNr = a.accountNr " ; // Assuming 'customer' is the table name
 
         try (Statement statement = connection.createStatement();
              ResultSet resultSet = ((Statement) statement).executeQuery(query)) {
@@ -45,6 +47,15 @@ public class CustomerDao implements DaoInterface<Customer> {
                 customer.setName(name);
                 customer.setPassword(password);
                 customer.setEmail(email);
+
+                double accountBalance = resultSet.getDouble("amount");
+                int accountNr = resultSet.getInt("accountNr");
+
+                AccountBalance balance = new AccountBalance();
+                balance.setAmount(accountBalance);
+                balance.setAccountNr(accountNr);
+
+                customer.setAccountBalance(balance);
                 //Add the Customer object to the list
                 customers.add(customer);
             }
@@ -53,7 +64,7 @@ public class CustomerDao implements DaoInterface<Customer> {
     }
 
     public Customer read(String name) throws SQLException {
-        String sql = "SELECT l.id, l.name, l.password, l.email, a.amount " +
+        String sql = "SELECT l.id, l.name, l.password, l.email, a.amount, l.accountNr " +
                 "FROM customer l " +
                 "JOIN account_balance a ON l.accountNr = a.accountNr " +
                 "WHERE l.name = ?";
@@ -70,10 +81,13 @@ public class CustomerDao implements DaoInterface<Customer> {
                 s.setId(rs.getInt("id"));
 
                 double accountBalance = rs.getDouble("amount");
+                int accountNr = rs.getInt("accountNr");
+
                 AccountBalance balance = new AccountBalance();
                 balance.setAmount(accountBalance);
-                s.setAccountBalance(balance);
+                balance.setAccountNr(accountNr);
 
+                s.setAccountBalance(balance);
                 return s;
             }
         } finally {
@@ -85,35 +99,39 @@ public class CustomerDao implements DaoInterface<Customer> {
     }
 
     public Customer readById(int id) throws SQLException {
-        String sql = "SELECT l.id, l.name, l.password, l.email, a.amount " +
+        String sql = "SELECT l.id, l.name, l.password, l.email, a.amount, l.accountNr " +
                 "FROM customer l " +
                 "JOIN account_balance a ON l.accountNr = a.accountNr " +
                 "WHERE l.id = ?";
-        ResultSet rs = null;
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setInt(1, id);
-            rs = statement.executeQuery();
+            try (ResultSet rs = statement.executeQuery()) {
+                if (rs.next()) {
+                    Customer s = new Customer();
+                    s.setName(rs.getString("name"));
+                    s.setEmail(rs.getString("email"));
+                    s.setPassword(rs.getString("password"));
+                    s.setId(rs.getInt("id")); // Use rs.getInt("id") instead of id
 
-            while (rs.next()) {
-                Customer s = new Customer();
-                s.setName(rs.getString("name"));
-                s.setEmail(rs.getString("email"));
-                s.setPassword(rs.getString("password"));
-                s.setId(id);
-                double accountBalance = rs.getDouble("amount");
-                AccountBalance balance = new AccountBalance();
-                balance.setAmount(accountBalance);
-                s.setAccountBalance(balance);
+                    double accountBalance = rs.getDouble("amount");
+                    int accountNr = rs.getInt("accountNr");
 
-                return s;
-            }
-        } finally {
-            if (rs != null) {
-                rs.close();
+                    AccountBalance balance = new AccountBalance();
+                    balance.setAmount(accountBalance);
+                    balance.setAccountNr(accountNr);
+
+                    s.setAccountBalance(balance);
+
+                    return s;
+                } else {
+                    // Debug logging for no result case
+                    System.out.println("No customer found with ID: " + id);
+                }
             }
         }
         return null;
     }
+
 
 
     @Override

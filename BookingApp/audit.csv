@@ -1,47 +1,34 @@
-created user: customer 1;2024-05-17T17:22:29.997655200
-created user: customer exp;2024-05-17T18:10:45.771202900
-read user: customer exp;2024-05-17T18:11:04.617408800
-updated user: customer exp;2024-05-17T18:11:34.099044900
-read user: customer exp;2024-05-17T18:11:47.405337800
-read account balance id: 1338 amount: 0.0;2024-05-17T18:11:50.844762400
-read user: customer exp;2024-05-17T18:12:13.281728800
-read account balance id: 1338 amount: 0.0;2024-05-17T18:12:34.370495700
-update: deposit into account balance id=1338 ->current amount: 2000.0;2024-05-17T18:14:26.995160400
-read all landlords;2024-05-17T18:14:59.653507
-created user: customer exp;2024-05-17T18:17:30.801453900
-read user: customer 1;2024-05-17T18:18:54.118215300
-read user: Jennifer Martinez;2024-05-17T18:19:51.180899700
-read user: Alice Johnson;2024-05-17T18:22:05.643418200
-read user: Alice Johnson;2024-05-17T18:24:09.346960900
-created address: Address{street='str', city='city', country='country', number='23'};2024-05-17T18:24:37.499052200
-created property: h;2024-05-17T18:24:37.505052700
-updated property: h;2024-05-17T18:32:03.023647
-removed property: h;2024-05-17T18:40:26.519826100
-read house: house 3;2024-05-17T18:45:32.864888400
-read all properties;2024-05-17T18:45:47.848387100
-read all apartments;2024-05-17T18:46:09.957595400
-read user: customer 1;2024-05-17T18:46:43.094907500
-created payment: Payment{amount=6000.0, status='success'};2024-05-17T18:47:16.811688300
-created booking for customer: customer 1 bookingRegNr=76265;2024-05-17T18:47:16.827874400
-read all bookings for customer: customer 1;2024-05-17T18:48:08.834128400
-read all bookings for customer: Sarah Johnson;2024-05-17T18:49:12.081888400
-read all bookings for customer: customer 1;2024-05-17T18:49:51.367686400
-read all bookings for customer: customer 1;2024-05-17T18:50:13.954948900
-delete booking: regNr76265;2024-05-17T18:51:26.697077600
-update payment: Payment{amount=40.0, status='success'};2024-05-17T18:52:58.797007600
-update booking: regNr=1;2024-05-17T18:52:58.808822800
-read booking: regNr=1;2024-05-17T18:53:32.563848
-removed property: 1;2024-05-17T18:54:38.658260300
-removed property: house 5;2024-05-17T18:56:50.079336800
-deleted address: Address{street='Via Condotti', city='Rome', country='Italy', number='101'};2024-05-17T18:56:50.085902200
-updated property: house 1;2024-05-17T19:01:54.763517
-read address: Address{street='Broadway', city='New York', country='USA', number='123'};2024-05-17T19:01:54.765886
-updated property: house 1;2024-05-17T19:04:40.468669400
-read address: Address{street='Broadway', city='New York', country='USA', number='123'};2024-05-17T19:04:40.476622600
-update address: Address{street='1', city='1', country='c', number='1'};2024-05-17T19:04:45.441503100
-updated property: house 4;2024-05-17T19:07:02.728447700
-read address: Address{street='Alexanderplatz', city='Berlin', country='Germany', number='89'};2024-05-17T19:07:02.737898800
-update address: Address{street='1', city='c', country='country', number='1'};2024-05-17T19:07:14.881704500
-read all properties;2024-05-17T19:08:30.281778900
-removed property: house 4;2024-05-17T19:09:25.721786600
-deleted address: Address{street='1', city='c', country='country', number='1'};2024-05-17T19:09:25.728033
+created user: cust;2024-05-18T09:36:35.440667300
+created account balance -> nr: 888;2024-05-18T09:36:35.443664100
+read user: cust;2024-05-18T09:36:49.307309400
+updated user: cust;2024-05-18T09:37:07.316585
+read all landlords;2024-05-18T09:37:15.411000800
+read all customers;2024-05-18T09:37:20.439143300
+removed user: cust;2024-05-18T09:37:31.253198
+deleted account balance: 888;2024-05-18T09:37:31.258195800
+read user: Robert Lee;2024-05-18T09:37:50.554873400
+read user: John Smith;2024-05-18T09:38:26.540166300
+created address: Address{street='1', city='1', country='1', number='1'};2024-05-18T09:39:08.957669200
+created property: house 123;2024-05-18T09:39:08.967674300
+updated property: house 123;2024-05-18T09:39:34.152383100
+read address: Address{street='1', city='1', country='1', number='1'};2024-05-18T09:39:34.153384900
+update address: Address{street='2', city='2', country='2', number='2'};2024-05-18T09:39:38.181320500
+removed property: house 123;2024-05-18T09:40:15.107667600
+deleted address: Address{street='2', city='2', country='2', number='2'};2024-05-18T09:40:15.111670300
+read house: house 3;2024-05-18T09:40:38.980163400
+read all properties;2024-05-18T09:40:57.044446
+read user: Jennifer Martinez;2024-05-18T09:42:02.082643700
+created payment: Payment{amount=6.0, status='success'};2024-05-18T09:42:31.266079500
+update account balance id=0;2024-05-18T09:42:31.269074400
+created booking for customer: Jennifer Martinez bookingRegNr=41538;2024-05-18T09:42:31.280217600
+read all bookings for customer: Jennifer Martinez;2024-05-18T09:42:40.526663400
+delete booking: regNr3;2024-05-18T09:42:57.319194900
+update payment: Payment{amount=187.0, status='success'};2024-05-18T09:43:40.727370800
+update account balance id=0;2024-05-18T09:43:40.728380600
+update booking: regNr=41538;2024-05-18T09:43:40.739491400
+read booking: regNr=41538;2024-05-18T09:43:48.627498100
+read all landlords;2024-05-18T09:45:43.709322900
+read all landlords;2024-05-18T09:49:38.417932100
+read all landlords;2024-05-18T09:51:39.167757500
+read all landlords;2024-05-18T09:54:36.431555700
+read all customers;2024-05-18T09:54:46.953840800

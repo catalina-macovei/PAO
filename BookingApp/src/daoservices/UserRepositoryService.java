@@ -28,14 +28,13 @@ public class UserRepositoryService {
 
     public Landlord getLandlordByName(String name) throws SQLException {
         Landlord landlord = landlordDao.read(name);
-        System.out.println("getLandlordByName " + landlord);
         return landlord;
     }
 
     public void removeUser(String typeOfUser, String name) throws SQLException {
         User user = getUser(typeOfUser, name);
         if (user == null) {
-            System.out.println("user not found");
+            //System.out.println("user not found");
             return;
         }
 
@@ -75,7 +74,6 @@ public class UserRepositoryService {
         } else {
             user = getCustomerByName(name);
         }
-        FileManagement.scriereFisierChar(AUDIT_FILE, "created account balance for user: " + name);
         return user;
     }
 

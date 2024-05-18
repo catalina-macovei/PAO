@@ -14,28 +14,43 @@ public class PaymentService {
     private PaymentRepositoryService dbService;
     public PaymentService () throws SQLException { this.dbService = new PaymentRepositoryService(); }
 
-    public Payment create(Scanner scanner, double requestedBookingPayment) throws SQLException { // maybe i need the option to pay from account balance, but maybe i'll do it in application
+    public Payment create(Scanner scanner, double requestedBookingPayment) throws SQLException {
         Payment payment = processBookingPayment(scanner, requestedBookingPayment);
         payment.setStatus("success");
-        System.out.println("payment amount="+payment+" id="+payment.getId());
-        dbService.addPayment(payment);
-        FileManagement.scriereFisierChar(AUDIT_FILE, "created payment: " + payment);
+        System.out.println("payment amount=" + payment.getAmount() + " id=" + payment.getId());
+
+        try {
+            dbService.addPayment(payment);
+            FileManagement.scriereFisierChar(AUDIT_FILE, "created payment: " + payment);
+        } catch (SQLException e) {
+            System.out.println("Error adding payment to the database");
+        }
         return payment;
     }
+
 
     public void read(Scanner scanner) throws SQLException {
         System.out.println("Enter payment ID:");
         int id = scanner.nextInt();
-        Payment payment = dbService.getPaymentById(id);
-        FileManagement.scriereFisierChar(AUDIT_FILE, "read payment: " + payment);
+        try {
+            Payment payment = dbService.getPaymentById(id);
+            FileManagement.scriereFisierChar(AUDIT_FILE, "read payment: " + payment);
+        } catch (SQLException e) {
+            System.out.println("error reading payment!");
+        }
     }
 
     public void delete(Scanner scanner) throws SQLException {
         System.out.println("Enter payment ID to delete:");
         int id = scanner.nextInt();
-        Payment p = dbService.getPaymentById(id);
-        dbService.removePayment(p);
-        FileManagement.scriereFisierChar(AUDIT_FILE, "remove payment: " + p);
+        try {
+            Payment p = dbService.getPaymentById(id);
+            dbService.removePayment(p);
+            FileManagement.scriereFisierChar(AUDIT_FILE, "remove payment: " + p);
+        } catch (SQLException e) {
+            System.out.println("Error deleting payment!");
+        }
+
     }
 
     public void update(Scanner scanner, Payment existingPayment, double amount) throws SQLException {
@@ -57,7 +72,11 @@ public class PaymentService {
             } while (!isValidAmount);
 
             existingPayment.setAmount(amountPaid);
-            dbService.updatePayment(existingPayment);
+            try {
+                dbService.updatePayment(existingPayment);
+            } catch (SQLException e) {
+                System.out.println("error updateing payment!");
+            }
             FileManagement.scriereFisierChar(AUDIT_FILE, "update payment: " + existingPayment);
         }
     }

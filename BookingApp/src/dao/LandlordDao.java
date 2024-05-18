@@ -28,7 +28,9 @@ public class LandlordDao implements DaoInterface<Landlord> {
     public List<Landlord> readAll() throws SQLException {
         List<Landlord> landlords = new ArrayList<>();
 
-        String query = "SELECT * FROM landlord"; // Assuming 'landlord' is the table name
+        String query = "SELECT l.id, l.name, l.password, l.email, a.amount, l.accountNr " +
+                "FROM landlord l " +
+                "JOIN account_balance a ON l.accountNr = a.accountNr " ;
 
         try (Statement statement = connection.createStatement();
              ResultSet resultSet = ((Statement) statement).executeQuery(query)) {
@@ -40,11 +42,19 @@ public class LandlordDao implements DaoInterface<Landlord> {
                 String password = resultSet.getString("password");
                 String email = resultSet.getString("email");
 
+
                 //Create a new Landlord object and set its properties using setters
                 Landlord landlord = new Landlord();
                 landlord.setName(name);
                 landlord.setPassword(password);
                 landlord.setEmail(email);
+
+                double accountBalance = resultSet.getDouble("amount");
+                int accountNr = resultSet.getInt("accountNr");
+                AccountBalance balance = new AccountBalance();
+                balance.setAmount(accountBalance);
+                balance.setAccountNr(accountNr);
+                landlord.setAccountBalance(balance);
                 //Add the Landlord object to the list
                 landlords.add(landlord);
             }
@@ -54,32 +64,31 @@ public class LandlordDao implements DaoInterface<Landlord> {
 
     @Override
     public Landlord read(String name) throws SQLException {
-        String sql = "SELECT l.id, l.name, l.password, l.email, a.amount " +
+        String sql = "SELECT l.id, l.name, l.password, l.email, a.amount, l.accountNr " +
                 "FROM landlord l " +
                 "JOIN account_balance a ON l.accountNr = a.accountNr " +
                 "WHERE l.name = ?";
-        ResultSet rs = null;
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setString(1, name);
-            rs = statement.executeQuery();
+            try (ResultSet rs = statement.executeQuery()) {
+                if (rs.next()) {
+                    Landlord s = new Landlord();
+                    s.setName(rs.getString("name"));
+                    s.setEmail(rs.getString("email"));
+                    s.setPassword(rs.getString("password"));
+                    s.setId(rs.getInt("id"));
 
-            while (rs.next()) {
-                Landlord s = new Landlord();
-                s.setName(rs.getString("name"));
-                s.setEmail(rs.getString("email"));
-                s.setPassword(rs.getString("password"));
-                s.setId(rs.getInt("id"));
+                    double accountBalance = rs.getDouble("amount");
+                    int accountNr = rs.getInt("accountNr");
+                    AccountBalance balance = new AccountBalance();
+                    balance.setAmount(accountBalance);
+                    balance.setAccountNr(accountNr);
+                    s.setAccountBalance(balance);
 
-                double accountBalance = rs.getDouble("amount");
-                AccountBalance balance = new AccountBalance();
-                balance.setAmount(accountBalance);
-                s.setAccountBalance(balance);
+                    System.out.println("Account Balance: " + balance);
 
-                return s;
-            }
-        } finally {
-            if (rs != null) {
-                rs.close();
+                    return s;
+                }
             }
         }
         return null;
@@ -93,7 +102,7 @@ public class LandlordDao implements DaoInterface<Landlord> {
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setString(1, land.getName());
             int rowsAffected = statement.executeUpdate();
-            System.out.println(rowsAffected + " rows deleted.");
+
         } catch (SQLException e) {
             System.err.println("Error deleting landlord: " + e.getMessage());
             throw e; // Rethrow the exception to propagate it to the caller
